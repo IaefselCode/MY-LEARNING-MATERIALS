@@ -1,0 +1,73 @@
+20260421	00:56:38	174607f3-2601-4fc2-93e2-fe5ecc6e97e6	ReferenceError: _dirname is not defined
+20260421	00:56:56	fc75a4f3-2311-4ec7-98dd-2d48ce7a03c8	ReferenceError: _dirname is not defined
+20260421	00:57:14	3d20e209-8993-4c38-899b-0755e7dbc420	ReferenceError: _dirname is not defined
+20260421	00:57:14	5593c1c7-6853-4df7-b802-2de8380e6d38	ReferenceError: _dirname is not defined
+20260421	00:57:18	3954471f-3758-4ee7-9191-7f504c4f3a1d	ReferenceError: _dirname is not defined
+20260421	00:57:18	b51aa1c8-f12e-44f0-b8a7-9fd1060d2120	ReferenceError: _dirname is not defined
+20260421	00:57:19	903b7c62-184f-45ab-9a2e-1bd42a78122a	ReferenceError: _dirname is not defined
+20260421	00:57:19	433ebeb0-7dff-459f-8895-65ae65fcb407	ReferenceError: _dirname is not defined
+20260421	00:57:19	4d127aaa-84f6-4707-975f-e81199bff0ad	ReferenceError: _dirname is not defined
+20260421	00:57:19	d94c6bdc-76f8-4d40-81c6-b1728b9c61c2	ReferenceError: _dirname is not defined
+20260421	00:57:20	16fd90ed-d9fc-4a63-86e3-2a072acd45ea	ReferenceError: _dirname is not defined
+20260421	00:57:20	aa951585-9597-405e-a125-83ea44727727	ReferenceError: _dirname is not defined
+20260421	00:57:20	51b96aa8-ed41-4cde-acd9-ee709f1a4ed1	ReferenceError: _dirname is not defined
+20260421	00:57:20	7baa507f-5744-41c3-9d54-840ff4e6392b	ReferenceError: _dirname is not defined
+20260421	00:57:45	89cce482-f0bb-4deb-a616-9b5dd8357c68	ReferenceError: _dirname is not defined
+20260421	00:59:20	1514666c-b360-4822-bcf9-82301d2c1dee	ReferenceError: _dirname is not defined
+20260421	00:59:20	fbf5f014-c33b-48d8-a747-55c07f1985eb	ReferenceError: _dirname is not defined
+20260421	00:59:26	0c171e59-1c61-4b7a-95b2-3c2460a21979	ReferenceError: _dirname is not defined
+20260421	00:59:26	e8a562d1-8f14-4e2c-b0af-19a84c4b1ef6	ReferenceError: _dirname is not defined
+20260421	00:59:55	b5e6036c-072b-4951-b189-3f1ceace3384	ReferenceError: _dirname is not defined
+20260421	00:59:59	42701b39-34d3-4071-9120-bf2538d205d9	ReferenceError: _dirname is not defined
+20260421	01:00:05	aee62ce8-ea57-485b-9b3b-7d62bc11e222	ReferenceError: _dirname is not defined
+20260421	01:00:08	4d8e7976-3510-4131-85a3-462279dc79f6	ReferenceError: _dirname is not defined
+20260421	01:00:08	96bcff61-8302-4e9f-a106-99e7d7b132c3	ReferenceError: _dirname is not defined
+20260421	01:00:08	fb80cfbf-b95f-4d8c-9e73-50eec05dc335	ReferenceError: _dirname is not defined
+20260421	01:00:08	fff1a3ec-84be-4376-873b-20139bdf3d47	ReferenceError: _dirname is not defined
+20260421	01:00:09	4c07bf94-b584-4091-8cda-3ca7d1283525	ReferenceError: _dirname is not defined
+20260421	01:01:37	39e8ea67-609e-47a3-8911-0a81ef38954d	ReferenceError: _dirname is not defined
+20260421	01:03:23	2d5b862d-cd05-41d1-91b0-5e2f48ee1026	ReferenceError: _dirname is not defined
+20260421	17:54:08	82072f55-1468-4591-88d6-0cba24d1aff9	ReferenceError: _dirname is not defined
+20260421	18:08:56	49181489-9307-4dbd-a36e-c68e3ea35e9c	Error: ENOENT: no such file or directory, stat 'D:\PROGRAMMING\LEARNING\FRAMEWORKS\NODE\8.ROUTING\views\subdil\index.html'
+20260421	18:08:56	4aa82bd1-2033-4cc7-9126-29f0ce011652	ReferenceError: _dirname is not defined
+20260421	18:09:27	2863349d-289c-475d-b097-d59d675d4e8b	ReferenceError: _dirname is not defined
+20260421	18:09:39	7c9f5e63-76d4-469d-9e4c-977ce25136b9	Error: ENOENT: no such file or directory, stat 'D:\PROGRAMMING\LEARNING\FRAMEWORKS\NODE\8.ROUTING\views\subdil\index.html'
+20260421	18:09:39	96c9ee99-ba1a-4093-b92f-3d4f4299bc75	ReferenceError: _dirname is not defined
+20260421	18:11:04	75cb53d4-c072-41a3-8b19-c8635b19e190	ReferenceError: _dirname is not defined
+20260421	18:11:04	cffd0dee-f633-4cc8-ae79-6e9f2df81973	ReferenceError: _dirname is not defined
+20260421	18:11:26	419c963b-1d6c-4e37-9334-c64e0a1dd29f	ReferenceError: _dirname is not defined
+20260421	18:11:26	d2f33d75-f2d3-46ed-ac68-4d3e62980be2	ReferenceError: _dirname is not defined
+20260421	18:11:27	d05be7e9-2b1b-4870-a323-38a1a0934bb4	ReferenceError: _dirname is not defined
+20260421	18:11:27	fbf0afda-49dc-4e10-b00e-c2ac6bed5666	ReferenceError: _dirname is not defined
+20260421	18:11:27	39cc9b80-48bb-472a-8011-659d5a8fec87	ReferenceError: _dirname is not defined
+20260421	18:11:27	3896a3e7-19b7-46d3-b1e4-13aaa7b25cad	ReferenceError: _dirname is not defined
+20260421	18:11:28	4385e433-543e-4dcd-a53c-3d5b7e77139e	ReferenceError: _dirname is not defined
+20260421	18:11:28	5de22c96-ff5f-4fe1-9612-c556769adc02	ReferenceError: _dirname is not defined
+20260421	18:11:28	eed5a025-9f93-43c3-b7e4-99e492f77d9b	ReferenceError: _dirname is not defined
+20260421	18:11:28	3933de69-0ec7-49fd-831d-e9fdbde2aa9d	ReferenceError: _dirname is not defined
+20260421	18:11:28	dbb63810-a6bf-4548-a5b5-11304ebbb712	ReferenceError: _dirname is not defined
+20260421	18:11:28	45458e9f-e266-47c9-a55c-482b37f56eae	ReferenceError: _dirname is not defined
+20260421	18:11:28	c1ad0917-92f8-4a90-9ea7-8c54bab04cb1	ReferenceError: _dirname is not defined
+20260421	18:11:28	94b53609-1893-4d30-ab94-bb19c41ed1c4	ReferenceError: _dirname is not defined
+20260421	18:11:30	452e97b7-a1f3-4b7f-a7a9-1067703efd73	ReferenceError: _dirname is not defined
+20260421	18:11:35	c58c5327-6217-4fad-a8f2-75092268cfed	ReferenceError: _dirname is not defined
+20260421	18:11:36	75fc41f0-acd0-4f62-bc88-7fdfb07114a9	ReferenceError: _dirname is not defined
+20260421	18:11:40	f1f2a2a1-410a-4f94-abb3-80230ef9559c	ReferenceError: _dirname is not defined
+20260421	18:11:40	6fc85546-c613-4c41-996f-390b131e048e	ReferenceError: _dirname is not defined
+20260421	18:11:41	4f071080-2e6a-424d-b838-e25cf89d87ac	ReferenceError: _dirname is not defined
+20260421	18:11:41	cfe62076-61dd-4434-8f3c-36fc9b378e02	ReferenceError: _dirname is not defined
+20260421	18:11:41	9a7b3dc6-ec28-4ec0-b4e9-413dbbf93fcd	ReferenceError: _dirname is not defined
+20260421	18:11:41	69efde8c-d51d-4961-b25a-5d0586bacd28	ReferenceError: _dirname is not defined
+20260421	18:11:41	18fcf24b-6829-4189-a918-a19492d48615	ReferenceError: _dirname is not defined
+20260421	18:11:41	c1f1d873-f7bf-450d-be9c-4bd6df4ee39e	ReferenceError: _dirname is not defined
+20260421	18:11:42	3fea0b5e-c6d6-4ec9-9b7e-b11bc554bd5c	ReferenceError: _dirname is not defined
+20260421	18:11:55	9afea4f3-99f1-470e-9b9c-2928a69e69d7	ReferenceError: _dirname is not defined
+20260421	18:12:02	dc51735f-46df-4135-a59e-209ba25acdcd	ReferenceError: _dirname is not defined
+20260421	18:12:45	f270a2f3-a42b-4d22-ba5e-ad6633dab2d2	ReferenceError: _dirname is not defined
+20260421	18:12:50	eaff0c8e-e1c1-4ab6-8c3c-61bbe910dea8	ReferenceError: _dirname is not defined20260422	11:03:41	0a6e0f0a-df20-4a44-bb2b-66e6f6446d2a	TypeError: Cannot read properties of undefined (reading 'firstname')
+20260422	11:06:01	7c1da206-32cb-4593-9deb-c24c591944d3	TypeError: Cannot read properties of undefined (reading 'firstname')
+20260422	11:06:19	5b77dc0c-2a58-4bc5-87b9-f7da82741e49	TypeError: Cannot read properties of undefined (reading 'firstname')
+20260422	11:06:52	012c3c0e-4884-4c3c-9c98-765d94630b4c	SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+20260422	11:07:24	b5106c29-8444-4ab3-92f7-ff3d48e870f3	TypeError: Cannot read properties of undefined (reading 'firstname')
+20260422	11:12:52	b71ae04c-485c-4463-acd4-4de03dc86495	SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+20260422	18:29:39	9d137f81-f198-428d-845d-8103433e5083	TypeError: Cannot read properties of undefined (reading 'firstname')

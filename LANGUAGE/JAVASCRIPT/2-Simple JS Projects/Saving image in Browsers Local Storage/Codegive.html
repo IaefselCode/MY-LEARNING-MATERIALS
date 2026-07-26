@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>localStorage</title>
+</head>
+
+<body>
+    <h1>Save Image to localStorage</h1>
+    <input type="file" id="imageinput" accept="image/*">
+    <button id="saveButton">Save Image</button>
+    <button id="loadButton"> load Image</button>
+
+    <br><br>
+
+    <img id="savedImage" src="" alt="Saved Image" style="display: none; max-width: 300px;">
+
+    <script>
+
+        const imageinput = document.getElementById('imageinput');
+        const saveButton = document.getElementById('saveButton');
+        const loadButton = document.getElementById('loadButton');
+        const savedImage = document.getElementById('savedImage');
+
+        //Function to Convert image file to Base64 string
+        function Convert(file) {
+            return new Promise((resolve, reject) => {
+                const reader = newFileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        //Save Image To LocalStorage
+        saveButton.addEventListener('click', async () => {
+            const file = imageinput.files[0];
+
+            if (file) {
+                try {
+                    const base64String = await convertToBase64(file);
+
+                    localStorage.setItem('savedImage', base64String);
+
+                    alert('Image saved to Local Storage');
+                } catch (error) {
+                    console.error('Error saving image:',error);
+                }
+            } else {
+                alert('Please Select an Image File First');
+            }
+        });
+
+
+        //Load Image From Local Storage
+        loadButton.addEventListener('click', () => {
+            const savedImageSrc = localStorage.getItem('savedImage');
+
+            if (savedImageSrc) {
+                savedImage.src = savedImageSrc;
+
+                savedImage.style.display = 'block';
+            } else {
+                alert('No image found in Local Storage');
+            }
+        });
+    </script>
+</body>
+
+</html>

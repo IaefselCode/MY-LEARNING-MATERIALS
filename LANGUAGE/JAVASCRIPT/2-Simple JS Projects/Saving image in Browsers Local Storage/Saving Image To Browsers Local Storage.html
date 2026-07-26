@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Save Image To Local Storage</h1><br>
+    <input type="file" id="Save">
+    <img src="" id="Preview" alt="Preview">
+    <script>
+        
+        document.querySelector('#Save').addEventListener('change', () => {
+            // console.log(this.files);
+
+            //can change the file to data uro 
+            const reader = new FileReader();
+
+              //to retieve the results
+              reader.addEventListener('load', () => {
+                //console.log(reader.result);
+                localStorage.setItem('recent-image',reader.result);
+            });
+
+            reader.readAsDataURL(this.files[0]);
+
+          
+        });
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            const recentImageDataUrl = localStorage.getItem('recent-image');
+
+            if(recentImageDataUrl){
+                document.querySelector('Preview').setAttribute('src', recentImageDataUrl);
+            }
+        })
+            
+
+
+           // localStorage.setItem('FullName',"David Modestus");
+           // localStorage.setItem('FullName2',"James Mbwatila");
+           // localStorage.setItem('FullName3',"Hilda Mlawa");
+           // localStorage.removeItem('FullName');
+            //localStorage.clear();
+            //console.log(localStorage.getItem('FullName3'));
+    </script>
+</body>
+
+</html>

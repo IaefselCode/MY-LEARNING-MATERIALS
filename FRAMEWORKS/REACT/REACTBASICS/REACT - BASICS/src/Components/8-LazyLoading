@@ -1,0 +1,37 @@
+Code Splitting Aso Known As LazyLoading
+lazy() - Lets you defer loading component's code until it is rendered for the first time
+
+lazy(load)
+
+Eg. const SomeComponent = lazy(load)
+What does doscord do
+May be we send link to admin that only admin can see and the others cant see so we can make the LazyLoading feature that their code only loads when they open and also we are going to use them in to admins only so to other people these components never be rendered to other users who are not admins
+Skeleton loading
+React Suspence
+when we use lazy, we also need to use reactSuspence and also default export
+
+So in the routes we just gonna import and do some work
+
+import {lazy, Suspence} from 'react';
+const Admin = lazy(() => import('./component/Admin'))
+
+So after then the suspence we gonna use it in our routes to the element and it also have a fallback
+and with suspence you should always use an error boundary with reactSuspence
+So we gonna install it 
+<Route path="admin" element={
+    <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => navigate("/")}>
+    <Suspence fallback={<SkeletonAdmin/>}></Suspence>
+    </ErrorBoundary>
+}><Route/>
+
+ npm i react-error-boundary
+
+ So we gonna import error-boundary, error-fallback component, and SkeletonAdmin component  and useNavigate from react-router
+
+So we are wrapping our suspence into an ErrorBoundary and admin in suspence and its required to have some component as we lazyLoad that is the skeleton
+now we need to use suspence its required for any component or component tree that you need to lazyload because also the admins children are not going to be rendered until you open the admin
+the skeleton is used when we wait for a component
+
+
+Note
+Do note use it anyware but you can use it when you have a section of code that note any user can use like admin panels and etc

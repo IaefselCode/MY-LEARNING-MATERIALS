@@ -1,0 +1,2 @@
+17-04-2026	12:27:58	a1d52bc6-8635-4982-99eb-c9a7df96458f	TypeError: fsPromises.readFil is not a function
+17-04-2026	12:27:59	7d05c457-96f1-4e67-89e6-b9eadc09809c	TypeError: fsPromises.readFil is not a function

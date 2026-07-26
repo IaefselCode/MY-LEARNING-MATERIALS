@@ -1,0 +1,4374 @@
+     REDUX & REDUXTOOLKIT
+Chapter 1 - STRUCTURE
+Redux - Is a Global State Manager which allows you to manage your app state in a single place It’s now recommended to use redux through redux toolkit which makes the following things easier
+•	Configuring Redux Store Easier
+•	Solved too many boilerplate codes
+•	No packages needed to be installed when doing anything
+Configuring Store
+-We are Going to create the app directory and then inside it we create the store.jsx file in which we can configure the store. Although you can create more than one store but its not recommended in redux because the goal is to create one single store than holds the entire application state
+ THE CODE
+import { configureStore } from "@reduxjs/toolkit";
+
+export const store = configureStore({
+    reducer: {
+  
+    }
+})
+
+Here I have Configured the store and Yet Haven’t imported and configure Reducers
+After Creating the Store We need to go  to main.jsx folder to import our store so that it can be known by  react app and Also we need to import the provider which will help us  to provide this global state to our app so as it can be known by react 
+Then we gonna wrap our app with Provider and pass the store prop as store
+THE CODE 
+//REDUX
+import { store } from './app/store.jsx'
+import { Provider } from 'react-redux'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </StrictMode>,
+)
+
+And Then we are going to create the folder called features which holds all the features for our app
+And then inside it we start with the simple feature of counter 
+So we Gonna Create The file Called Counter.jsx which is one of the features and now this counter will Also have a slice called  counterSlice.jsx 
+Note!
+The name slice comes from splitting up redux state objects into multiple slices of state so a slice is really a correction of reducer logic and actions for a single feature in app Example A Blog Might Have a Slice for post and another Slice for Comment
+So you would handle the logic of each differently so they each get their own slice
+
+Creating a Slice
+First we need to import it from redux toolkit
+THE CODE
+import { createSlice } from "@reduxjs/toolkit";
+
+So after importing it we need to use the slice it gives us an object with the arguments or parameters inside
+name – Gives the name 
+initialState – Gives the initialState of our reducer
+Reducers – This Is where we would name all of our different actions
+THE CODE
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+    count: 0
+}
+
+export const counterSlice = createSlice({
+    name: "counter",
+    initialState,
+    reducers: {
+        increment: (state) => {
+            state.count += 1;
+        },
+        decrement: (state) => {
+            state.count -= 1;
+        }
+    }
+})
+
+// so here we need to export both our actions and reducers
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+
+Explanations
+So Here First I have imported createSlice from redux toolkit then before configuring the slice I have defined the initialState of the slice and set the count to be zero (0)
+Then I have defined the counterSlice that is equal to the createSlice object that I have imported from   redux toolkit 
+The Arguments inside createSlice
+1.	I have set the name to be counter
+2.	The InitialState its gonna take the one I formally defined before configuring createSlice
+3.	REDUCERS – Now in here is where we would name all of our different actions here
+So I have started with a increment action which is equal to an arrow function which receives a state and for addition we gonna say state.count += 1; which will be an increment
+SAME as decrement
+After then I have exported all of may actions and reducers
+
+Creating a Slice
+Here is where we import a slice and use it in the store reducers
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "../features/counter/counterSlice"
+
+export const store = configureStore({
+    reducer: {
+        counter: counterReducer,
+    }
+})
+So here I have imported the counter reducer in the store and stored it So Now it is available to the entire app through the provider in main.jsx
+
+So as to use the features of the counterSlice I am going to create the counter.jsx file within the same folder with counterSlice.jsx
+Using the Features of the slice using the counter.jsx file
+So in the file am gonna import two hooks to use that are 
+•	useDispatch – That sends actions to the reducer
+•	useSelector – That lets you read data from the store
+Also am gonna import the actions which I created in the counterSlice.jsx
+import { useDispatch, useSelector } from 'react-redux'
+import { decrement, increment, reset, incrementByAmount } from './counterSlice'
+
+Now using useSelector to select the data from the store am gonna use dot operator 
+And its gonna take an arrow function with state as parameter the from there we gonna access to the store then the slice 
+const count = useSelector((state) => state.counter.count);
+
+So after defining a count and set it as equal to useSelector am also gonna define the dispatch and set it to use dispatch
+const dispatch = useDispatch();
+
+So after then am gonna Create a section in the JSX and inside the section am gonna create a paragraph that displays the count
+And also a div with two Buttons that to increase and decrease count. We gonna set their onclick to an arrow function that is equal to dispatch and inside the dispatch wecan pass any of those actions we created
+<div>
+        <p>{count}</p>
+        <button onClick={() => dispatch(increment())}>+</button>
+        <button onClick={() => dispatch(decrement())}>-</button>
+      </div>
+So after then I import the counter component to the app.jsx folder so as it should be rendered
+So after there this shows you the basic setup of  redux-toolkit and how it works
+
+So lets Go and add some more actions so we can experiment more with the pattern and see how more actions will be added
+So am gonna add some couple more actions In the counterSlice 
+1st. Is the reset which will help us to reset our counter and its gonna be implemented the same as the other
+reset: (state) => {
+            state.count = 0; 
+        },
+
+2nd. Is the IncrementByAmount now this one is gonna be a little different or complex because its going to receive a state and an action as a parameter and its gonna be used as action.payload the amount that we pass in and it will be in tha payload of this function
+incrementByAmount: (state, action) => {
+            state.count += action.payload;
+        }
+
+Now after adding these actions we also gonna export them as well
+export const {increment,decrement,reset,incrementByAmount}=counterSlice.actions;
+
+Using the New Actions of the slice using the counter.jsx file
+So am gonna create an input field and make it work with useState hook
+Am also gonna declare another addValue so as to make sure that the input should be a number and if its not a number then its value should be zero
+const addValue = Number(incrementAmount) || 0;
+ 
+Am also gonna declare the resetAll to reset the value in the input field as well as the global store
+const resetAll = () => {
+    setIncrementAmount(0);
+    dispatch(reset());
+  };
+
+So after then lets put that in JSX
+Am gonna start with the input field with useState
+<input
+        type="text"
+        value={incrementAmount}
+        onChange={(e) => setIncrementAmount(e.target.value)}
+      />
+      <div>
+
+Also am gonna create a div and inside it am gonna add two buttons which is reset button which is gonna use the resetAll we defined
+<button onClick={resetAll}>Reset</button>
+
+And Set amount button which is gonna take the state of the input field and use it as a payload but also if its not a number its gonna be zero because that’s how we validated formally
+So here inside the incrementByAmount am going to pass addValue variable which took the value of the input and validated it
+<button onClick={() => dispatch(incrementByAmount(addValue))}>
+ Set Amount to Increase
+</button>
+
+FULL CODE 
+Counter.jsx
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { decrement, increment, reset, incrementByAmount } from "./counterSlice";
+
+const Counter = () => {
+  const count = useSelector((state) => state.counter.count);
+  const dispatch = useDispatch();
+
+  const [incrementAmount, setIncrementAmount] = useState("");
+
+  const addValue = Number(incrementAmount) || 0;
+  const resetAll = () => {
+    setIncrementAmount(0);
+    dispatch(reset());
+  };
+
+  return (
+    <>
+      <div>
+        <p>{count}</p>
+        <button onClick={() => dispatch(increment())}>+</button>
+        <button onClick={() => dispatch(decrement())}>-</button>
+      </div>
+      <input
+        type="text"
+        value={incrementAmount}
+        onChange={(e) => setIncrementAmount(e.target.value)}
+      />
+      <div>
+        <button onClick={() => dispatch(incrementByAmount(addValue))}>
+          Set Amount to Increase
+        </button>
+        <button onClick={resetAll}>Reset</button>
+      </div>
+    </>
+  );
+};
+
+export default Counter;
+      
+counterSlice.jsx
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+    count: 0
+}
+
+export const counterSlice = createSlice({
+    name: "counter",
+    initialState,
+    reducers: {
+        increment: (state) => {
+            state.count += 1;
+        },
+        decrement: (state) => {
+            state.count -= 1;
+        },
+        reset: (state) => {
+            state.count = 0; 
+        },
+        incrementByAmount: (state, action) => {
+            state.count += action.payload;
+        }
+    }
+})
+
+// so here we need to export both our actions and reducers
+export const { increment, decrement, reset, incrementByAmount } = counterSlice.actions;
+export default counterSlice.reducer;
+
+store.jsx
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "../features/counter/counterSlice"
+
+export const store = configureStore({
+    reducer: {
+        counter: counterReducer,
+    }
+})
+
+               <<<<   SO THAT’S IS THE SIMPLE STUCTURE OF REDUX and SOME BASIC ACTIONS   >>>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 2 - DATA FLOW
+So in today am gonna create a new feature called post feature in my features directory as a folder called posts in it
+ postsSlice
+The name of the slice will be posts and the initialstate of the slice will be the array of objects with id , title and content
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = [
+    { id: '1', title: 'Learning Redux Toolkit', content: 'I have good experience i state management for javascript applications using Redux Toolkit' },
+    { id: '2', title: 'Slices...', content: 'When I say a SLICE It doesent meen a pissa slice but they carry features of the app and not just the app i mean the specific featuer of the app like adding new card can be done by Its slice' },
+]
+const postsSlice = createSlice({
+    name: 'posts',
+    initialState,
+    reducers: {
+    },        
+})
+
+export default postsSlice.reducer;
+
+
+And then am gonna import it to the store
+PostsList
+So also am gonna create a PostsList component inside the posts forder and in it am gonna import useSelector fron redux-toolkit
+ And use it to get all the posts in our store and render them
+import { useSelector } from "react-redux";
+import React from 'react'
+
+const PostsList = () => {
+    const posts = useSelector(state => state.posts)
+
+    const renderPosts = posts.map((post) => (
+        <article key={post.id} className="card">
+            <h2><u><b>{post.title}</b></u></h2>
+            <p>{post.content.substring(0,200)}</p>
+            <PostAuthor userId={post.userId}/>
+        </article>
+    ))
+    return (
+        <div>
+            <h2>Posts</h2>
+            {renderPosts}
+        </div>
+    )
+}
+
+export default PostsList
+
+Now before we go on we need to talk about the useSelector right now it receives the state and then we get the state.posts but what if the structure of our state changes thats means we are also suppose to change in the useSelector. So it would be better if we create the selector in the slice and then export it and use it in our component
+Eg. in the slice
+export const selectAllPosts = (state) => state.posts;
+
+And then in our PostsList Component we are going to import it 
+import { selectAllPosts } from "./postsSlice";
+
+and use it
+const posts = useSelector(selectAllPosts)
+
+So now if the shape of a state ever changes you just have to change it in the slice and not to every component
+
+So after then we are going to import it and use it in the app.jsx so as it can be rendered 
+
+NOW WE NEED TO BE ABLE TO ADD A “POST” with a Form
+To do that we need to create a reducer function that will handle the data we submit
+reducers: {
+        postAdded(state,action){
+            state.push(action.payload)
+        },
+    },
+Which takes a state and an action and we gonna state.pust actions.payload to the array which we will dispatch action.payload which is the form data
+
+Now we will talk about the state.push in a second because if you are familiar with react we don’t just mutate state and that’s what .push will do    .what we know is in order to mutate the state we need to spread in the state first and then mutate It by having action.payload as the new item  not mutating it directly or state.push
+But redux-toolkit uses imma js under the hood and that’s allows you to write javascript like this 
+state.push(action.payload)
+
+were you are normally will be mutating the state 
+BUT 
+It is not mutating the state imma js creates a new state underneath 
+NOTE THAT – This only works inside the createSlice any were else out side you will still need to use the proper  way of mutating the state
+So inside createSlie you can easily use state.push or any other array method and imma js will handle it
+
+So we also need to export that as an action
+So when we write these post added function the createSlice automatically creates an action creator function with the same name now when we export our actions we are actually exporting these action creator function that is automatically created 
+So that’s why you don’t see postsSlice.actions above you just see it when exporting 
+
+
+AddPostForm.js
+So here I have created a simple form with useState and to make it work I have used useDispatch and also nanoid which gives me random id from redux and redux-toolkit and then import postadded from post slice
+And then down we gonna add a button which when clicked its gonna trigger the handleAddPost  function which checks if the title and content are true then add to the array using dispatch
+    const handleAddPost = () => {
+        if (title && content) {
+            dispatch(
+                postAdded({
+                    id: nanoid(),
+                    title,
+                    content,
+                })
+            )
+            setTitle("")
+            setContent("")
+        } else {
+            alert("Please Add Post");
+        }
+    }
+
+FULL CODE
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { nanoid } from "@reduxjs/toolkit"
+import { postAdded } from "./postsSlice";
+
+import React from 'react'
+
+const AddPostForm = () => {
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+
+    const onTitleChange = (e) => setTitle(e.target.value);
+    const onContentChange = (e) => setContent(e.target.value);
+
+    const dispatch = useDispatch()
+
+    //Handling Add Post
+    const handleAddPost = () => {
+        if (title && content) {
+            dispatch(
+                postAdded({
+                    id: nanoid(),
+                    title,
+                    content,
+                })
+            )
+            setTitle("")
+            setContent("")
+        } else {
+            alert("Please Add Post");
+        }
+    }
+
+    return (
+        <div>
+            {/* Navigation */}
+            <div>
+                <h2>Navigation</h2>
+                <Link to={"/"}><button>Posts</button></Link>
+                <Link to={"/AddPostForm"}><button>Add Post</button></Link>
+            </div>
+
+            {/* Adding Posts */}
+            <h2>Add New Post</h2>
+            <form action="" className="card">
+                {/* <label htmlFor="postTitle">  Post Title:</label> */}
+                <input type="text" id="postTitle" name="postTitle" value={title} onChange={onTitleChange} placeholder="Post Title:" /><br />
+
+                {/* <label htmlFor="postContent">  Post Content:</label> */}
+                <textarea name="postContent" id="postContent" value={content} onChange={onContentChange} placeholder="Post Content:"></textarea><br />
+                <button type="button" onClick={handleAddPost}>Save Post</button>
+            </form>
+        </div>
+    )
+}
+
+export default AddPostForm
+
+
+So here it works perfect but again the component needs to know the details of the state and when the state changes it means we are also suppose to change it in our component so we need to find a way to select the details of the state inside the slice it self so as when the state changes you only change In a slice only
+So we need to create callback function in the slice 
+How to create it 
+Its simple postadded action needs to have two functions inside which is reducer and prepare function
+ reducers: {
+        postAdded: {                        
+            reducer: (state, action) => {          
+                state.push(action.payload)         
+            },                                       
+            prepare: (title, content) => { 
+                return {                           
+                    payload: {                     
+                        id: nanoid(),              
+                        title,                    
+                        content,                                         
+                    }                              
+                }                                  
+            }                                      
+        }                                          
+    },                 
+Reducer – Which receives a state and an action and decide how state changes based on the action
+Prepare – which receives title and content that we would get from the component  for now but it can  take any payload that we need update  also it returns the action.payload as it needs to be formatted 
+Note = The id that is nanoid() it does not come from the form but its generated automatically by nanoid which comes from redux-toolkit so don’t forget to import it 
+
+And then in the AddFormPost Component it will be 
+ dispatch(
+postAdded(title, content)
+)
+
+So here its done. And the benefit of it is our component doesn’t need to know the structure of the state at all. All of it its handled in the slice
+
+ReduxDevTools
+So until here there is pretty much complexity in redux and redux-toolkit that’s why there is redux dev tools. Is a Developer tool to power-up Redux Development Workflow. It can be used as browser extension which can be used in (chrome, firefox and Edge) and also as a stand alone app or a react component integrated in the client app
+And it’s a pretty good way to check your state and make sure things work as expected inside of your app
+
+
+Users
+And now we wanna add users to the application so as we can credit the posts to their authors  but we want to keep this as a separate feature so we want to separate all the logic and data from the postsSlice 
+And we will create a new feature called users so inside our features directory we are going to create another directory called users and then inside of users we will create a usersSlice 
+ 
+usersSlice
+So here the slice has a name of users and the initial state of three users and then I have exported selectAllUsers state logic and the usersSlice reducer
+import { createSlice } from "@reduxjs/toolkit";
+const initialState = [
+    { id: '0', name: 'David' },
+    { id: '1', name: 'Elisha' },
+    { id: '2', name: 'Luis' },
+];
+
+const usersSlice = createSlice({
+    name: "users",
+    initialState,
+    reducers: {
+
+    }
+})
+
+export const selectAllUsers = (state) => state.users;
+
+export default usersSlice.reducer;
+
+So after then we need to import it in the store
+So now when post are made we need to go ahead and add the userId to the post so that we can look up the user name and of course give them credit with the post
+So we gonna go to the postsSlice and change the prepare function to also accept userId and also inside the payload as well
+And now so as to send this userid data to the prepare function we need to go back where it is coming from and that’s gonna be the AddPostForm   
+
+So in the top of the component we gonna add couple of things we have got use dispatch which sends data to payload we also gonna add useSelector and also import selectAllUsers which comes from usersSlice  so as we can select the state in user slice
+So after then we gonna create a select option field with useState hook and map over the users to show them in select option field but their value is their id so we are sending id as a value and also in the dispatch we also gonna add the userId as well
+Lastly I have added the validation that if not all the form is filled then the button will be disabled
+
+So Now we are sending the userId from our form as we dispatch we are sending it to the prepare callback which then get added as a payload But what we haven’t done is set anything to display the author and we will do that by creating the new component inside the posts feature called PostAuthor.jsx 
+
+PostAuthor.jsx
+Here we start by importing useSelector and selectAllUserss from usersSlice
+So we gonna declare a value called users which is assigned to useSelector selecting all the users in usersSlice then we gonna declare other value called author which is assigned to users.find (meaning we are going to use the find array method on users) which is going to find the user.id which is equal to userId in our payload  and then we gonna return the author.name if true if not true then we gonna return “Unknown author”
+import { useSelector } from "react-redux";
+import { selectAllUsers } from "../Users/usersSlice";
+
+import React from 'react'
+
+const PostAuthor = ({ userId }) => {
+    const users = useSelector(selectAllUsers)
+
+    const author = users.find(user => user.id === userId);
+
+    return (
+        <span>by {author ? author.name : 'Unknown Author'}</span>
+    )
+}
+
+export default PostAuthor
+
+Now here I have been asking myself where do I get the userId  that I used it in find method
+So am gonna import it in the postList component and display it in a maped area so as it can be in every post and then passing the userId as a prop which is equal to post.userId now I might wonder that there is no user id in my array but in my new arrays which gonna be imputed by the form gonna have userId because it is in the payload  
+So later in the PostAuthor we gonna accept the userId prop
+import PostAuthor from "./PostAuthor";
+
+<PostAuthor userId={post.userId}/>
+
+
+Also it would be nice if we just display the time user posted in the user friendly way right besides the author. And this will be part of the post data so we will go back to the postsSlice and we can make some changes here
+Now the first thing we gonna need to do is import the dependency called date-fns
+npm install date-fns
+This is a package that will help us to display the date in a friendly way for users
+So we will import  “sub” from date-fns and then use it to display the date 
+Starting in our initialState in post slice and then in the object we add date which is assigned to sub and then inside sub we take down the new date and then subtract 10 minutes in the first array of objects and 5 minutes in the second array of objects and then convert to string and then we need to add the date to the payload after the content
+date: new Date().toISOString(),
+
+So after then am gonna create new component called TimeAgo.jsx
+
+TimeAgo.jsx
+So in here we are going to import 
+import { parseISO, formatDistanceToNow } from "date-fns";
+
+so in here am gonna first accept the timestamp as a prop here and also declare timeAgo as and empty string and add a condition if timestamp is true then i declare the const date that is equal to
+ parseISO(timestamp) then declare const timePeriod is equal to formatDistanceToNow(date) then time ago will be the time period 
+And then return it in the jsx in a span with title of timestamp and then inside it we display timeAgo
+import { parseISO, formatDistanceToNow } from "date-fns";
+
+import React from "react";
+
+const TimeAgo = ({ timestamp }) => {
+  let timeAgo = "";
+  if (timestamp) {
+    const date = parseISO(timestamp);
+    const timePeriod = formatDistanceToNow(date);
+    timeAgo = `${timePeriod} ago`;
+  }
+  return (
+    <div>
+      <span title="timestamp">
+        &nbsp; <i>{timeAgo}</i>
+      </span>
+    </div>
+  );
+};
+
+export default TimeAgo;
+
+Now back in the PostsList component we import TimeAgo and And then during displaying it we pass timestamp as prop which is equal post.date
+
+<TimeAgo timestamp={post.date}></TimeAgo>
+And then it is going to be used in TimeAgo Component
+
+
+Now its working good but we need the new post to show up to the top so the most resent post to be on top
+//Solting the new post to be on top
+  const orderedPosts = posts
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+
+Now this looks okay but we need to also add reactions in our posts. So we go to the post slice because when we need to add any feature we need to go to the postSlice to change
+So in our initialS	tates we gonna add an object of reactions with in an object
+So we gonna also add it to the prepare so as it can be in evely post and now we need to add the new reducer which will actually update the reaction count whether user clicks on it we will call it reactionAdded 
+ reactionAdded(state, action) {
+      const { postId, reaction } = action.payload;
+      const existingPost = state.find((post) => post.id === postId);
+      if (existingPost) {
+        existingPost.reactions[reaction]++;
+      }
+    },
+
+So after then redux automatically creates the creator function so as we can export our action
+export const { postAdded, reactionAdded } = postsSlice.actions;
+
+So just as we did in other features we gonna add the feature for the reaction separately by creating the Component called ReactionButton.jsx
+So I add the buttons and pass them as props and  display them to all posts
+
+                             SO THESE IS THE PRACTICE OF THE STRUCTURE AND DATA FLOW Used in Redux Toolkit
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 3 - ASYNC Logic
+Redux does everything synchronously so anything asynchronously has to happen outside the store
+And this is were Redux middleware comes and the most common  async middleware is Redux THUNK 
+THUNKS - Are recommended as the standard approach for writing asynch logic with redux
+So What does THUNK means the world thunk means The word “thunk” is a programming term that means “a piece of code that does some delayed work”.
+
+So that does pretty much explain it self. So here in the practical am gonna use the previous code to demonstrate asynchronous logic. Starting with the postsSlice.jsx we gonna change the initialstate to be the data from an API server 
+const initialState = {
+  posts:[],
+  status:'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
+};
+So now the initialState gonna be an object inside it with the array of posts the status and error
+Posts – Is were we populate or hydrate the initial values
+Status – There are other status like idle,loading,succeeded and failed
+Error – This is gonna hold the error if we got one
+
+So now we need to consider that to change how we access our initialState because it have changed so we gonna access the initial state and then inside it  there is an array of posts so we gonna add .posts to every place we were accessing the initialstate 
+Easy way use control + f to find the state. And add .posts every were
+
+So as you can see we have changed here and this is why we created the selectAllPosts  and prepare function inside the postsSlice Because like this when we change something to our state we only have to change it in the slice so that is an advantage
+import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { sub } from "date-fns";
+
+const initialState = {
+  posts:[],
+  status:'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
+};
+
+const postsSlice = createSlice({
+  name: "posts",
+  initialState,
+  reducers: {
+    postAdded: {
+      reducer: (state, action) => {
+        state.posts.push(action.payload);
+      },
+      prepare: (title, content, userId) => {
+        return {
+          payload: {
+            id: nanoid(), //........>>> - So this one provides a reducer and a prepare callback
+            title, //for our postAdded reducer function
+            content,
+            date: new Date().toISOString(),
+            userId,
+            reactions: {
+              thumbsup: 0,
+              wow: 0,
+              heart: 0,
+              rocket: 0,
+              coffee: 0,
+            },
+          },
+        };
+      },
+    },
+    reactionAdded(state, action) {
+      const { postId, reaction } = action.payload;
+      const existingPost = state.posts.find((post) => post.id === postId);
+      if (existingPost) {
+        existingPost.reactions[reaction]++;
+      }
+    },
+  },
+});
+export const selectAllPosts = (state) => state.posts.posts;
+
+export const { postAdded, reactionAdded } = postsSlice.actions;
+export default postsSlice.reducer;
+
+//As we know that react desent want to update the state by just pushung the value to an array but redux toolkit allows even without using
+//Spread Operator
+
+//SO THE DISPATCH and SELECTOR PARAMETERS can start from the slice it self so as we don't duplicate logic to every other state
+//The STRUCTURE of the STATE for PostList and AddPostForm It is all handled inside the slice
+
+
+So now we create our Async THUNK inside our postsSlice so we gonna import it from redux toolkit ”createAsyncThunk” and also use axios for fetching data so we gonna import it from axios and we will need a base url to where we are fetching data
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+  try {
+    const response = await axios.get(postUrl);
+    return [...response.data];
+  } catch (err) {
+    return err.message;
+  }
+});
+
+createAsyncThunk accept two arguments the first one is the string that is used as the prefex for the generated action type  the second is the payload creator callback and this function should return a promise that contains some data or rejected promise with an error 
+And you can see inside the callback async we are using axios and a try/catch block so we are just requesting information from postUrl  and then when returning the responce  we are spreading it into an array  and then we catch an error if there is one and we are returning its message  and note we are getting our data from https://jsonplaceholder.typicode.com/posts  and this is the nice fake API that does accept post request and get request  so we will be able to send data to it and get a response as well
+NOTE
+createAsyncThunk they are handled with extraReducer where it receives a builder object  and that builder respond to different Cases
+
+
+Please Note
+Remove the try/catch blocks you see today. We will handle promise pending / fulfilled / rejected elsewhere Resource code updated!
+
+Also 
+You can  just return response.data without spreading it into a new array
+Now in our postsSlice we have our reducer but sometimes the slice reducer needs to respond to other actions that were not defined as part of the slices reducers and that’s what is happening with our asyncthunk fetchPosts so lets go and add an extraReducers that is supported
+    extraReducer(builder) {
+      builder
+        .addCase(fetchPosts.pending, (state, action) => {
+          state.status = "loading";
+        })
+        .addCase(fetchPosts.fulfilled, (state, action) => {
+          state.status = "succeeded";
+
+          //Adding date and reactions
+          let min = 1;
+          const loadedPosts = action.payload.map((post) => {
+            post.date = sub(new Date(), { minutes: min++ }).toISOString;
+            post.reactions = {
+              thumbsup: 0,
+              hooray: 0,
+              heart: 0,
+              rocket: 0,
+              eyes: 0,
+            };
+            return post;
+          });
+
+          //Add any fetched posts to the array
+          state.posts = state.posts.concat(loadedPosts);
+        })
+        .addCase(fetchPosts.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.error.message;
+        });
+    },
+
+It accepts a builder parameter and  this builder parameter is an object that  lets define additional case reducers that run in response to the actions defined outside of the slice
+
+So Here the cases are listening  for the promise status  action types  that are dispatched  by the fetchPosts thunk and then we respond by setting our state accordingly
+
+So lets look at each one 
+1.	A promise could be pending  so  then we respond by setting our status to loading 
+2.	Then A promise could of course be fulfilled and we set the status to succeeded   but then we are also going to add and return some information here so we define the min variable and assigning it to “1”  then we are looking for the loadedPosts that we get from the action payload  and we map over each one of those because our doesent have some of the areas of data than we need and one of them is the date and the other is reactions 
+
+So we are just setting the date with the sub function from date fns and we are increasing a minute for each post in that way they don’t have the same timeAgo set or timestamp
+And we also have reactions and also they are not coming from the API either so we just add them and then return the post 
+
+And then we add those loadedPosts to our state
+ //Add any fetched posts to the array
+state.posts = state.posts.concat(loadedPosts);
+and understand this is still inside the slice which uses imma js underneath the hood so we are doing things like concat and like adding minutes that we wouldn’t normally do because it would mutate the state  but inside createSlice imma js handles it and makes sure its not a mutation
+3.	Then off course  we also have the rejected possibility here and then we will set our status to failed and set our error message
+
+So this looks a little like a switch case statement but its based on the builder and then we have an .addCase  for each one of these possibility here  and they are all inside the extraReducers   so it handling something that didn’t get defined inside the normal reducers part of the slice
+So after then we are going to elso export the selector of our status and error
+
+
+So After then we need to go to the postList and then also import useDispatch  , useEffect Hook and also 
+The status and the error we selected in the postsSlice  but also the fetchPosts  that we created during createAsyncThunk
+
+import{selectAllPosts,getPostsStatus,getPostsError,fetchPosts}from"./postsSlice";
+
+after then we gonna declare the useDispatch and then we gonna use the useSelector to select all the selected 
+
+ const dispatch = useDispatch();
+
+  const postsStatus = useSelector(getPostsStatus);
+  const error = useSelector(getPostsError);
+  const posts = useSelector(selectAllPosts);
+
+Now after these selectors we gonna use the useEffect 
+useEffect(() => {
+    if (postsStatus === "idle") {
+      dispatch(fetchPosts());
+    }
+  }, [postsStatus, dispatch]);
+
+Here we gonn check if the postsStatus is idle and then if its true we will dispatch fetchPosts asyncthunk
+And this useEffect will only be trigged if postsStatus and dispatch are true
+
+And Now we wanna display the loading state in our postsList and we gonna do it by extracting some of our postsList component into a separate component called PostsExcerpt.jsx
+
+PostsExcerpt.jsx
+So in here its gonna receive post as prop and then we gonna import the things that it needs that are 
+import PostAuthor from "./PostAuthor";
+import TimeAgo from "./TimeAgo";
+import ReactionButtons from "./ReactionButtons";
+which we gonna cut them from postsList.jsx
+and also we are going to cut the article which maps to the state and we will not be using the key there so it will be removed
+<article className="card">
+      <h2>
+        <u>
+          <b>{post.title}</b>
+        </u>
+      </h2>
+      <p>{(post.content || post.body , ‘’).substring(0, 200)}</p>
+      <PostAuthor userId={post.userId} />
+      <TimeAgo timestamp={post.date}></TimeAgo>
+      <ReactionButtons post={post} />
+    </article>
+Here we have make it to display either post.content from out form and post.body from our API
+and now we can import it into postsList then during displaying it we gonna change the logic a little bit there to the renderPosts and orderedPosts
+to be
+let content;
+  if (postsStatus === "loading") {
+    content = <p>"loading..."</p>;
+  } else if (postsStatus === "succeeded") {
+    const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    content = orderedPosts.map((post) => (
+      <PostsExcerpt key={post.id} post={post} />
+    ));
+  } else if (postsStatus === "failed") {
+    content = <p>{error}</p>;
+  }
+
+So first we defined content and then if statement starting with if postsStatus is equal to loading the the content will be “loading…” and if you have a spinner component this will be suitable to use here
+Else if postsStatus is equal to succeeded the the content will be  the logic that we putted of sorting orderedPosts and then the content will be mapping the orderedPosts and for each post we pass PostsExcerpt we imported and the key will be post.id  and then we pass post as prop
+Else if postsStatus is equal to failed  the the content will be <p>{error}</p>
+
+So after here its done the posts are Seen But We See Unknown Authors. So we gonna also need to fetch the authors from an API
+We gonna follow the very simiral Pattern like the way we did with the postsSlice
+So Here we gonna create Async thunk to the UsersSlice and in it we gonna create the asyc function which awaits for the result of the users we are fetching 
+And also because its asyncthunk its Happening outside of the normal reducers so we gonna create an Extra Reducer and I it we check if the request is fulfilled if true then we gonna get the action Payload of the users
+//And Now we want to add users to the Application so we can credit the posts to their authors 
+// But we want to keep this as a separate feature so we want to separate all the logic and data from the post slice
+//So the concept is to add the userId to the post  sa as we can look up the username of the post and also give them credit
+//So here i get the concept of getting the id or any data from one slice to another
+   
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+//Fake Users Api
+const USERS_URL = import.meta.env.VITE_USERS_URL;
+
+export const fetchUsers = createAsyncThunk(
+  "posts/fetchUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(USERS_URL);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+const initialState = [
+    // { id: '0', name: 'David' },
+    // { id: '1', name: 'Elisha' },
+    // { id: '2', name: 'Luis' },
+];
+
+const usersSlice = createSlice({
+    name: "users",
+    initialState,
+    reducers: {
+
+    },
+    extraReducers: (builder) => {
+      builder
+        .addCase(fetchUsers.fulfilled, (state, action) => {
+          return action.payload;
+        });
+    },     
+})
+
+export const selectAllUsers = (state) => state.users;
+
+export default usersSlice.reducer;
+
+
+
+So after then we will need to dispatch our fetchUsers asynch thunk but this time its gonna be different. So we gona go directly to the main.js then import it
+That is because we want to allow the users right when the app starts and then we gonn say 
+Store.dispatch(featchUsers());
+And we can do this because we now the store is configured here and we can access it from here
+So after then the first 10posts gonna have the first user and the other 10 gonna have the second user
+But we should have 10 different authors and should be able to see those authors in our drop list
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+import AddPostForm from './features/posts/AddPostForm.jsx'
+
+//REACT-ROUTER
+import { createBrowserRouter } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
+
+//REDUX
+import { store } from './app/store.jsx'
+import { Provider } from 'react-redux'
+import { fetchUsers } from './features/Users/usersSlice.jsx'
+
+//Dispatching fetchUsers so that users are available throughout the app
+store.dispatch(fetchUsers());
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />
+  },
+  {
+    path:"/add",
+    element:<AddPostForm />
+  },
+])
+createRoot(document.getElementById('root')).render(
+  // <StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+   //</StrictMode>, 
+)
+
+So then we have set the users from an API
+
+So the last Adjustment is to change how we add a new post
+To do that lets go to the postsSlice and create a new asycnThunk  called addNewPost  
+And then its gonna receive initialstate as a parameter and then its gonna post data to the POSTS_URL which the data is the initialstate and then we gonna get the response which is One record not an array
+/ Adding New Post Thunk
+export const addNewPost = createAsyncThunk(
+  "posts/addNewPost",
+  async (initialPost, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(POSTS_URL, initialPost);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+And then in the builder below we need to add a case for addNewPost if its fulfilled but also since again because the API does not have some of the data that we have been using so we gonna add them here with the date and the reactions
+And in the userId section the Api gives us the UserId as a string so we gonna convert it to number
+ .addCase(addNewPost.fulfilled, (state, action) => {
+        // Fix for API post IDs: API returns id of 101 for all new posts
+        action.payload.userId = Number(action.payload.userId);
+        action.payload.date = new Date().toISOString();
+        action.payload.reactions = {
+          thumbsup: 0,
+          wow: 0,
+          heart: 0,
+          rocket: 0,
+          coffee: 0,
+        };
+        console.log(action.payload);
+        state.posts.push(action.payload);
+      });
+
+And then we are pushing that addNewPost action.payload to the array
+And then we go to Our addPostForm and we need to replace postAdded with addNewPost
+And then create a new state were we are going to look for the state over the status starting with initial value idle 
+Then we gonna go to the cansave and then change a little bit of logic
+const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === "idle";
+  //Handling Add Post
+  const handleAddPost = () => {
+    if (canSave) {
+      try {
+        setAddRequestStatus("pending");
+        dispatch(
+          addNewPost({
+            title,
+            body: content,
+            userId,
+            // id will be added by the server
+          })
+        ).unwrap();
+        setTitle("");
+        setContent("");
+        setUserId("");
+      } catch (err) {
+        console.error("Failed to save the post: ", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
+    }
+  };
+
+FUNCTIONS OF UNWRAP
+In Redux Toolkit, .unwrap() is used with async thunks to make them behave like normal Promises.
+Let’s break it down clearly 👇
+________________________________________
+🔍 What .unwrap() does
+.unwrap():
+•	Returns a real Promise
+•	Resolves with the fulfilled action payload
+•	Throws an error when the thunk is rejected
+This allows you to use:
+•	await
+•	try / catch
+just like a normal async function.
+________________________________________
+❌ Without .unwrap()
+try {
+  const result = await dispatch(updatePost(post))
+  console.log(result)
+} catch (err) {
+  console.log('Error caught')
+}
+What actually happens:
+•	dispatch(updatePost()) never throws
+•	Even on failure, it resolves to an action object
+•	catch will never run
+Result example:
+{
+  type: 'posts/updatePost/rejected',
+  error: { message: 'Request failed' }
+}
+________________________________________
+✅ With .unwrap()
+try {
+  const updatedPost = await dispatch(updatePost(post)).unwrap()
+  console.log(updatedPost)
+} catch (err) {
+  console.error('Update failed:', err)
+}
+Now:
+•	✅ On success → returns action.payload
+•	❌ On failure → throws the error
+•	catch works as expected
+________________________________________
+🧠 Think of it like this
+Async thunk without unwrap:
+dispatch(thunk) → action object
+Async thunk with unwrap:
+dispatch(thunk).unwrap() → Promise<data>
+________________________________________
+📌 When should you use .unwrap()?
+Use .unwrap() when:
+•	You want try/catch error handling
+•	You need the returned data immediately
+•	You want to navigate after success
+•	You want form submit logic
+Example:
+await dispatch(loginUser(credentials)).unwrap()
+navigate('/dashboard')
+________________________________________
+🚫 When you don’t need .unwrap()
+You don’t need .unwrap() if:
+•	You handle loading/error state in Redux slice
+•	You’re not awaiting the result
+•	You rely only on useSelector
+________________________________________
+⚠️ Important Rule
+.unwrap() works ONLY with createAsyncThunk
+It does not work with normal actions.
+________________________________________
+🔁 Comparison Table
+Feature	Without unwrap	With unwrap
+Returns payload	❌	✅
+Throws error	❌	✅
+Works with try/catch	❌	✅
+Useful in forms	❌	✅
+________________________________________
+✅ Simple analogy
+Imagine a delivery 🚚:
+•	dispatch(thunk) → “Package status report”
+•	dispatch(thunk).unwrap() → “Open the package or throw if broken”
+________________________________________
+If you want, I can also:
+•	Show .unwrap() vs React Query mutateAsync
+•	Explain how Redux Toolkit handles errors internally
+•	Show a real-world login example
+Just ask 😊
+
+Immer js
+
+
+
+
+
+
+
+
+
+Chapter 4 - Blog Project
+‘’’’’’’’’’’’’’’’’’’’’’’’
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 5 - Performance
+Here we gonna  some performance problems and using performance optimization methods
+So to record and know the performance issues in our app we use Profiler form ReactDevTools 
+To record the entire state of our app
+•	First When we click the reaction button we re-render all the 100 posts again and again leading to a performance issues as when I like
+So am gonna  fix that and also add some other optimization to the application
+
+SO BEFORE I  APPLY OPTIMIZATION I WANT TO ADD SOME FEATURES THAT WILL HELP DEMOSTRATE THESE OPTIMIZATIONS 
+So we gonna add a feature of UsersList(To list All the Users) and UserPage(To view users info and Posts he or she Posted)
+
+Now we need to add one more feature before we can apply this Optimizations 
+Inside the postsSlice we are going to add a simple counter  now it realy not important in the blog But Its going to be a nice review for implementing some new state  with redux and its also gonna help me demonstrate  some optimization
+
+So in our initial state we gonna add a count value of zero
+const initialState = {
+  posts: [],
+  status: "idle", //'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null,
+  count: 0
+};
+
+And we gonna pass all the way down to where we create slice and if you noticed we are not using the postAdded reducer any more ever since we applied asyncThunk so am gonna remove the postAdded Code
+Now underneath the reactionAdded we gonna add other reducer called increaseCount
+That we gonna add a counter feature 
+
+After then we are ready for our first Optimization 
+Now on the yellow area we can see that the header is rendered but also the userpage is also rendered
+And that is strange because the userpage isn’t related to the count at all that state really has nothing to do with the userpage other than they are both kept in the postsSlice     
+So why is that happening
+So let go to the code inside the userpage component and we gonna find userposts definition
+Now here is the problem
+  const userPosts = useSelector(state => {
+    const posts = selectAllPosts(state);
+    return posts.filter(post => post.userId === Number(userId) || String(post.userId) === String(userId));
+  });
+
+So here we are using the useSelector we pass in the state then we selectAllPosts  and then we are returning allposts to the state  but its filtered and here is where we run into a problem that is because filter returns a new array everytime  and use selector will run everytime an action is dispatched 
+So when we dispatch that increase count in the header then the useSelector runs again then it forces the component to re-render if a new reference value is returned and we are returning a new value everytime  with filter  so that’s why we are rendering the userpage
+
+And we can Fix All Of This By Creating a Memorized Selector
+Lets go back to the postSlice and Learn How to Do this
+First we are going to import  createSelector from redux toolkit
+And then lets go down to the selectors in the bottom in the selectpostbyid and its gonna change a little bit
+export const selectPostsByUser = createSelector(
+  [selectAllPosts, (state, userId) => userId],
+
+
+
+  (posts, userId) => posts.filter(post => post.user === userId)
+)
+
+Here it will be selectPostByUser and we are using  a createSelector the createSelector accept one or more input functions and notice they are inside of brackets like an array that should be your first clue that these are dependencies actually the values returned from these functions  and they provide the input parameters for the output function of our memorized selector
+
+So if the selectAllPosts changes or the anonymous function which is taking state and userId and returning userId changes  that is the only time that we will get from the selector that is the only time it will re-render
+
+Now lets go to the userPage and import it and use it  now we will come down here where we were previously calling filter we replace everything we had
+  const userPosts = useSelector(state => {
+    const posts = selectAllPosts(state);
+    return posts.filter(post => post.userId === Number(userId) || String(post.userId) === String(userId));
+  });
+With
+ const userPosts = useSelector(state => selectPostsByUser(state, Number(userId)))
+
+Now we will test it again using the profiler and nothing happens
+So we have solved the issue of performance 
+
+NOW WE CAN START USING IT ON EVERYPAGE TO SEE PERFORMANCE ISSUE
+In the homepage if we try to click any reaction button  not just not just the reaction button  was re-rendered but all the posts are also re-rendered  now this is the performance isssue
+And we do need to fix it and there are couple of ways to do it
+1st – To Use the react - memo which will allow the component to not re-render if the prop  that it receives has not changed so if the post that we passed to postExerpt did’nt change it will not re-render 
+-To do this first we will import react from react to our postExerpt component so as we can use the memo feature The we will declare our component with let not const so as it can be able to change 
+And before exporting it we will say 
+PostsExerpt = React.memo(PostExerpt);
+Here we used that memo feature from react
+import React from "react";
+import PostAuthor from "./PostAuthor";
+import TimeAgo from "./TimeAgo";
+import ReactionButtons from "./ReactionButtons";
+import { Link } from "react-router-dom";
+
+let PostsExcerpt = ({ post }) => {
+  return (
+    <article className="card">
+      <h2>
+        <u>
+          <b>{post.title}</b>
+        </u>
+      </h2>
+      <p className="excerpt" >
+        {(post.content || post.body || "").substring(0, 50)}...
+      </p>
+      <div>
+        <PostAuthor userId={post.userId} />
+        <TimeAgo timestamp={post.date}></TimeAgo><br />
+        <Link className="text-blue-600" to={`post/${post.id}`}>View Post</Link>
+      </div>
+      <ReactionButtons post={post} />
+    </article>
+  );
+};
+PostsExcerpt = React.memo(PostsExcerpt);
+
+export default PostsExcerpt;
+This Easily Solves the Immediate Problem
+And there is nothing wrong with react.memo solution but we are going to remove that because there is other solution called state normalization and its stronglly recommanded
+
+createSelector from chatgpt
+Oh yeah — createSelector is one of the best parts of Redux Toolkit 🔥
+If you’re already using RTK, this is how you make your selectors smart, fast, and clean.
+________________________________________
+What is createSelector?
+createSelector comes from Reselect (and is re-exported by Redux Toolkit).
+It creates memoized selectors.
+👉 Memoized means:
+•	The selector recalculates only when its inputs change
+•	Otherwise, it returns the cached result
+•	This avoids unnecessary re-renders 🚀
+________________________________________
+Why you should care
+Without createSelector:
+•	Selectors run every time state changes
+•	Expensive logic runs again and again
+•	Components may re-render for no reason
+With createSelector:
+•	Better performance
+•	Cleaner logic
+•	Easy derived state
+________________________________________
+Basic Syntax
+import { createSelector } from '@reduxjs/toolkit';
+
+createSelector(
+  inputSelectors,
+  resultFunction
+);
+________________________________________
+Simple Example (No Memoization)
+const selectUsers = (state) => state.users.users;
+
+const selectActiveUsers = (state) =>
+  state.users.users.filter(user => user.active);
+❌ This filter runs on every state change
+________________________________________
+Same Example Using createSelector ✅
+import { createSelector } from '@reduxjs/toolkit';
+
+const selectUsers = (state) => state.users.users;
+
+export const selectActiveUsers = createSelector(
+  [selectUsers],
+  (users) => users.filter(user => user.active)
+);
+✔️ filter() runs only when users changes
+________________________________________
+Using Multiple Inputs
+const selectUsers = (state) => state.users.users;
+const selectRole = (state, role) => role;
+
+export const selectUsersByRole = createSelector(
+  [selectUsers, selectRole],
+  (users, role) => users.filter(user => user.role === role)
+);
+Usage in a component
+const admins = useSelector(state =>
+  selectUsersByRole(state, 'admin')
+);
+________________________________________
+Derived Data Example (Very Common)
+export const selectCartTotal = createSelector(
+  [(state) => state.cart.items],
+  (items) =>
+    items.reduce((total, item) => total + item.price * item.quantity, 0)
+);
+Perfect for:
+•	totals
+•	counts
+•	filtered lists
+•	computed values
+________________________________________
+Important Rule ⚠️
+❌ Don’t do this:
+createSelector(
+  [(state) => state.users],
+  (users) => users
+);
+No computation = no benefit.
+✅ Use createSelector when:
+•	You transform data
+•	You filter/map/reduce
+•	Logic is non-trivial
+________________________________________
+How it fits with Redux Toolkit Architecture
+Since you’ve worked with:
+•	Redux Toolkit
+•	Feature-based architecture
+•	Clean architecture
+👉 Best practice:
+features/
+  users/
+    usersSlice.js
+    usersSelectors.js   ← createSelector lives here
+Keeps slices clean and selectors reusable 💯
+________________________________________
+When NOT to use createSelector
+•	Simple state access:
+const selectUser = (state) => state.user;
+•	No transformation
+•	No performance concern
+________________________________________
+If you want, next I can:
+•	Rewrite one of your selectors using createSelector
+•	Show common mistakes
+•	Explain why memoization sometimes “doesn’t work”
+•	Compare createSelector vs normal selectors in re-renders
+Just tell me 👌
+
+
+
+
+State Normalization
+Normalized state structure is the recommended approach for storing items 
+Normalization means – No duplication of data
+ And it also means keeping the items stored in a lookup table by item ID (Creates an ID lookup)
+ 
+ So our normalized state shape is comprised of an object with an IDs array and the a nested entities object that contains all of the items 
+And the best part of using normalized data with redux toolkit  offers a  createEntityAdapter IPA
+
+
+
+ 
+
+And I will make slices less complicated and easier to manage
+
+ Lets get started with normalized state back in the postsSlice file  we will have to go back up to where the imports are and also import the createEntityAdopter from redux toolkit
+And then under our POSTS_URL we are going to declare a postsAdapter we gonna assign it to the createEntityAdapter  function and then inside it we can put sortCompare function 
+Now this should look familiar because its kind of like what we were using inside of the postsList we were previously applaying the solt that looks much like that when rendering PostsExcerpt
+And what I like about it is that we are abtracting this back to the slice instead of doing that logic in the component so the sorting is done to the slice directly
+import {
+  createSlice,
+  createAsyncThunk,
+  createSelector,
+  createEntityAdapter
+} from "@reduxjs/toolkit";
+
+const postsAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.date.localeCompare(a.date)
+});
+
+So now lets go back to the slice and instead of just the initial state we gonna have the  const initialState is assigned to postsAdapter.getInitialState for the initialState  and
+ we remove the empty array of posts:[]  because our initialState will already return that normalized object that we were talking about when we have an array of the item Ids and you have that entities object that will actually have all the items  (even if we didn’t put anything else in it)
+So that’s there automatically and the status,error and count are just the extraStates we are adding on top of that
+
+And now we may need to change some of our reducers the asyncThunks are just fine
+And Lets Look on how we get the existingPost for our reaction added here we are using
+       const existingPost = state.posts.find((post) => post.id === postId);
+We are going to change it to
+      const existingPost = state.entities[postId]
+ So now its going to be state.entities and we are going to pass in that postId because we are using it as an object to look up
+ So the entities is an object and then we are passing in id to lookup that specific post
+
+Now when we go to the extraReducers  into the builder cases there are severel to look out and  we are going to deal with the fulfilled cases
+
+Starting with fetchPosts
+So when we get down here insead of
+        state.posts = state.posts.concat(loadedPosts);
+we are going to change that because this postsAdapter has its own crud methods so lets look at the first one
+        postsAdapter.upsertMany(state, loadedPosts)
+Here we say postsAdapte.upsertMany and we just pass in the state and then the loadedPosts
+
+Then addNewPost
+        // state.posts.push(action.payload);
+Then
+        postsAdapter.addOne(state, action.payload)
+
+
+
+Then updatePost
+          // const { id } = action.payload;
+          // const posts = state.posts.filter((post) => post.id !== id);
+          // state.posts = [...posts, action.payload];
+
+Then
+          postsAdapter.upsertOne(state, action.payload)
+
+
+And now with that we gonna go to the selectors area and replace some of these selectors because 
+getSelectors is another method we are going to call that automatically creates some selectors that we would typically need like (selectAllPosts, selectPostById, )
+And then its going to give us one new selector
+// postsAdapter Selector
+//getSelector creates these selectors and we rename them with alieses using ES6 destructuring so they match up with our pre existing code
+export const {
+  selectAll: selectAllPosts,
+  selectById: selectPostById,
+  selectIds: selectByIds //And then to just stick with that naming convertion we gonna say selectByIds
+  //Pass in selector that returns the posts slice of state
+} = postsAdapter.getSelectors(state => state.posts);
+
+
+
+
+
+
+
+
+
+So postsAdapter.getSelectors() then pass in the selector that returns posts slice state 
+But then it creates these (selectAll, selectById, selectIds) that we can export with these (selectAllPosts, selectPostById, selectByIds) alieses that resembles the code base  and we are assigning using destructuring
+
+That’s 	Quite a few changes to the postsSlice  to put these createEntityAdapter in action
+
+How ever when you get good at playing these createEntityAdapter it surely make this a lot Easier especially down there where we apply the crud methods
+It also made it very easy when getting the existingPost for reactionAdded as we got it from the entities object lookup
+But then all of these crud methods from upsertMany, addOne, upsertOne, removeOne all of those makes that preaty easy to walk with now there are more methods 
+Pass On Them
+
+
+And now we need to make a couple of changes in the postsList component to Take advantages of the changes we just made in the postSlice
+First instead of selectAllPosts we are going to selectPostIds
+And we are going to define our orderedPostIds is assigned to the selector selecting selectPostIds
+And then in the succeeded block of if condition we will change the logic of sorting because we already have done it  inside the createEntityAdapter so we are just going to map
+Eg.
+Then
+ const orderedPosts = posts
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    content = orderedPosts.map((post) => (
+      <PostsExcerpt key={post.id} post={post} />
+    ));
+After
+ content = orderedPostIds.map((postId) => (
+      <PostsExcerpt key={postId} postId={postId} />
+And we used the postId as key and passit as prop to the postExcerpt
+Note postId-From ids array in our normalized state
+So now we go to the postExerpt component that we did have a react memo on for performance and removed it
+We gonna first change that its getting the postId not the post  as prop
+
+And also we gonna import couple of other things that’s useSelector and selectPostById
+And we will put them in work by declaring post and  calling the useSelector then we call the selectPostById when we passin the state and the postId which we received as a prop
+Then
+import PostAuthor from "./PostAuthor";
+import TimeAgo from "./TimeAgo";
+import ReactionButtons from "./ReactionButtons";
+import { Link } from "react-router-dom";
+
+const PostsExcerpt = ({ post }) => {
+  return (
+    <article className="card">
+      <h2>
+        <u>
+          <b>{post.title}</b>
+        </u>
+      </h2>
+      <p className="excerpt" >
+        {(post.content || post.body || "").substring(0, 50)}...
+      </p>
+      <div>
+        <PostAuthor userId={post.userId} />
+        <TimeAgo timestamp={post.date}></TimeAgo><br />
+        <Link className="text-blue-600" to={`post/${post.id}`}>View Post</Link>
+      </div>
+      <ReactionButtons post={post} />
+    </article>
+  );
+};
+
+export default PostsExcerpt;
+
+
+
+
+After
+
+import PostAuthor from "./PostAuthor";
+import TimeAgo from "./TimeAgo";
+import ReactionButtons from "./ReactionButtons";
+import { Link } from "react-router-dom";
+
+import { useSelector } from "react-redux";
+import { selectPostById } from "./postsSlice";
+
+const PostsExcerpt = ({ postId }) => {
+
+  const post = useSelector(state => selectPostById(state , postId));
+  
+  return (
+    <article className="card">
+      <h2>
+        <u>
+          <b>{post.title}</b>
+        </u>
+      </h2>
+      <p className="excerpt" >
+        {(post.content || post.body || "").substring(0, 50)}...
+      </p>
+      <div>
+        <PostAuthor userId={post.userId} />
+        <TimeAgo timestamp={post.date}></TimeAgo><br />
+        <Link className="text-blue-600" to={`post/${post.id}`}>View Post</Link>
+      </div>
+      <ReactionButtons post={post} />
+    </article>
+  );
+};
+
+export default PostsExcerpt;
+
+So now everything is solved and the re-rendering is solved using state-normalization by re-rendering the only one which got the reaction
+And we also pulled more logic out of the component and put it in the component
+
+
+
+State Normalization
+
+Alright, let’s break normalization in Redux Toolkit down in a way that actually sticks—no textbook pain 😄
+________________________________________
+What does “normalization” mean in Redux?
+Normalization means storing your data in a flat, structured way instead of deeply nested objects.
+Think of it like a database:
+•	Each item stored once
+•	Relationships handled by IDs, not by nesting full objects
+❌ Non-normalized (bad for Redux)
+posts: [
+  {
+    id: 1,
+    title: "Redux",
+    author: {
+      id: 5,
+      name: "David",
+      age: 23
+    }
+  }
+]
+Problems here:
+•	Same author may appear in many posts
+•	Updating the author means updating every post
+•	Harder selectors & unnecessary re-renders
+________________________________________
+✅ Normalized (Redux-friendly)
+{
+  posts: {
+    ids: [1],
+    entities: {
+      1: { id: 1, title: "Redux", authorId: 5 }
+    }
+  },
+  users: {
+    ids: [5],
+    entities: {
+      5: { id: 5, name: "David", age: 23 }
+    }
+  }
+}
+Now:
+•	Each entity exists once
+•	Updates are easy
+•	Selectors are fast
+•	React re-renders only when needed
+________________________________________
+Why normalization is IMPORTANT in Redux Toolkit
+Redux Toolkit + React relies heavily on reference checks.
+Normalization helps with:
+✅ Performance
+✅ Cleaner reducers
+✅ Easier updates
+✅ Scalable architecture (SaaS-ready)
+Perfect for apps with:
+•	Lists
+•	Relations (users ↔ posts ↔ comments)
+•	Large datasets
+________________________________________
+How Redux Toolkit helps you normalize (the easy way)
+🔥 createEntityAdapter
+RTK gives you a built-in tool to normalize data automatically.
+________________________________________
+Example: Normalized users slice
+import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
+
+const usersAdapter = createEntityAdapter();
+
+const usersSlice = createSlice({
+  name: "users",
+  initialState: usersAdapter.getInitialState(),
+  reducers: {
+    userAdded: usersAdapter.addOne,
+    usersReceived: usersAdapter.setAll,
+    userUpdated: usersAdapter.updateOne,
+    userRemoved: usersAdapter.removeOne,
+  },
+});
+
+export const {
+  userAdded,
+  usersReceived,
+  userUpdated,
+  userRemoved,
+} = usersSlice.actions;
+
+export default usersSlice.reducer;
+Resulting state shape
+{
+  ids: [1, 2],
+  entities: {
+    1: { id: 1, name: "David" },
+    2: { id: 2, name: "Sarah" }
+  }
+}
+Automatically normalized 🎯
+________________________________________
+Selectors become super clean
+export const {
+  selectAll: selectAllUsers,
+  selectById: selectUserById,
+} = usersAdapter.getSelectors((state) => state.users);
+Usage:
+const user = useSelector((state) => selectUserById(state, 1));
+No .find() loops. No pain.
+________________________________________
+Normalization with relationships (posts → users)
+// post entity
+{
+  id: 10,
+  title: "Redux Toolkit",
+  authorId: 5
+}
+Then:
+const post = selectPostById(state, 10);
+const author = selectUserById(state, post.authorId);
+Clean. Predictable. Scalable.
+________________________________________
+When SHOULD you normalize?
+Normalize when:
+✔ Lists can grow
+✔ Entities repeat
+✔ Relationships exist
+✔ Performance matters
+No need to over-normalize tiny forms or simple UI state.
+________________________________________
+Mental model (easy way to remember)
+Redux state should look like a database, not a JSON API response
+________________________________________
+If you want, I can:
+•	Normalize a real API response you use
+•	Show normalization with RTK Query
+•	Compare normalized vs non-normalized re-renders
+•	Connect this to feature-based + clean architecture (which you’ve been learning 👀)
+Just tell me 👌
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 6 – RTK Query
+Begginer example of RTK Query we will build a simple CRUD app with RTK Query
+Note
+RTK Query is very easy to use compared to ReduxToolkit
+ Also for the starter code there is a data folder with db.json file which have of the todos in it that’s is because we are going to use json server 
+So to install that globally 
+npm i json-server -g
+-g means globally so I can just start in just any command line
+ 
+After that to go ahead and start the server 
+Json-server - -watch data/db.json   - - port  3500
+
+
+
+
+
+Note :
+you must first create the location of the file with the todos
+So after then it will identify our todos and it starts watching that data so now it will support CRUD functions  
+So now lets take a quicklook at the app.js
+And you can see here we are importing TodoList from features dir then todos dir then TodoList
+
+And this is how you typically organize features when you are using redux so that is the reason for that file structure
+So lets go to that TodoList.jsx component 
+
+
+// add imports
+import { useState } from "react"
+
+const TodoList = () => {
+    const [newTodo, setNewTodo] = useState('')
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // addTodo({ userId: 1, title: newTodo, completed: false })
+        setNewTodo('')
+    }
+
+    const newItemSection =
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="new-todo">Enter a new todo item</label>
+            <div className="new-todo">
+                <input
+                    type="text"
+                    id="new-todo"
+                    value={newTodo}
+                    onChange={(e) => setNewTodo(e.target.value)}
+                    placeholder="Enter new todo"
+                />
+            </div>
+            <button className="submit">
+                <FontAwesomeIcon icon={faUpload} />
+            </button>
+        </form>
+
+    let content;
+    // Define conditional content
+    
+    return (
+        <main>
+            <h1>Todo List</h1>
+            {newItemSection}
+            {content}
+        </main>
+    )
+}
+export default TodoList
+
+
+Now what we don’t have here is any intergration with RTK Query yet. But other than that you may have created a todolist before if not wwe will have the basic code together for one today
+But we still are going to add some imports for RTK Query, We are going to handleSubmit and handleAddingNew Todo
+And then as we scroll down here  there is a form of adding new todo and we handled it using  useState Hook 
+Other than that we are going to create some content based on the condition (conditional content) 
+And then we will render that content into JSX 
+So that’s all the starter code 
+
+Now lets get started by Intergrating RTK Query into our project
+We will start by adding and api directory inside of our features directory.
+Note 
+The api directory is also a default name If we would have to name it something else we would have to specify  that for RTK Query So we will live it as a default so that it makes sence  and Representing the API in our code
+
+Now lets add a file called apiSlice.jsx to this api directory 
+Okay inside the api slice this is where we would create our methods to interact  with API it essentially replaces something like Axios and pulls that code out of our component logic to over here in a separate API slice 
+Which is kind of how we name things in redux if you are familiar with redux  (slices)
+So
+We are going to import createApi and fetchBaseQuery    
+import { createApi } from "@reduxjs/toolkit/query/react";
+Note:  There is react in the ending because this is specifics for react but you can use it without react
+Then we gonna create apiSlice
+export const apiSlice = createApi({
+    reducerPath: 'api',
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }),
+    endpoints: (builder) => ({
+        getTodos: builder.query({
+            query: () => '/todos',
+        })
+    })
+})
+
+So here first we export const apiSlice which is assigned to createApi ()
+Inside of it its an object  and inside an object the first thing we do is we define the reducerPath which is api and again this is the default so if we didn’t put It here it would be just okay because it will just default to that but also if its not default you would need to rename it according to the file name
+
+Now then we have a baseQuery and this uses the fetchBaseQuery() and then inside it there is a baseUrl simiral to axios. The baseUrl Selects our localserver of just our local dev environment  so its just http://localhost:3500 	 
+
+From there we define endpoints  for the API to interact with  and if you are familiar with builder cases in redux toolkit and this is very similar 
+So we pass in a builder any then we are defining methods to interact with api (getTodos) so we are going to get all of the todos by assigning getTodos to  builder.query() and then inside of that  we have our query method and is assigned to an anonymous function that passes the  /todos  that will be attached to the baseUrl  that’s  going to request.  Then  all of the todos with an http GET method 
+
+And then one cool feature about RTK Query is it creates cunstom hooks based on the methods that we provide 
+As for that getTodos = useGetTodosQuery
+export const { useGetTodosQuery } = apiSlice
+
+So we could name it something else like getPizza and it would create those custom hooks based on that name that’s useGetPizzaQuery
+ So its going to start with “use” and end with “Query” and its going to use whatever name we use for the method  in between 
+
+So down here we just got export const and then destructuring getting the useGetTodosQuery from apiSlice 
+And now before we put this cunstom hook to use inside of our TodoList component 
+
+We need to go back to main.jsx  just like the context provider if you are using the context api with react we need to provide our slice to the app
+So there is couple of imports we gonna import that’s ApiProvider and apiSlice That we created and exported
+import { ApiProvider } from '@reduxjs/toolkit/query/react'
+import { apiSlice } from './features/api/apiSlice.jsx'
+
+So once we have those we need to wrap our app with that ApiProvider and then we are passing in the apiSlice as api prop with the ApiProvider
+<ApiProvider api={apiSlice}>
+      <App />
+</ApiProvider>
+And now that our app can access the apiSlice we can put that hook that we created to use
+So lets go to the TodoList Component 
+We will import the hook that we created 
+import { useGetTodosQuery } from "../api/apiSlice"
+
+So then we need to define that and use it inside of the component 
+ const {
+        data: todos,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetTodosQuery()
+
+So lets look at everything we get from these hook
+ We are getting “data, isLoading, isSuccess, isError and error ” and we are destructuring all of these and we are renaming data to todos
+
+Now lets go ahead and use this to conditionally render some content   
+let content;
+    // Define conditional content
+    if (isLoading) {
+        content = <p>Loading...</p>
+    } else if (isSuccess) {
+       content = JSON.stringify(todos)
+    } else if (isError) {
+        content = <p>{error}</p>
+    }
+
+After the conditional rendering we call the content to the jsx and wi will render all of the                     JSON-stringified data
+
+And now that we know that we are receiving the data lets go back to the apiSlice and add our other methods just separating using comma
+  endpoints: (builder) => ({
+        getTodos: builder.query({
+            query: () => '/todos',
+        }),
+        addTodo: builder.mutation({
+            query: (todo) => ({
+                url: '/todos',
+                method: 'POST',
+                body: todo
+            }),
+        }),
+    })
+
+Its with the first method getTodos
+Now notice something in the builder its not builder.query but its builder.mutation and the rest of the methods gonna be mutations  and that means we are actually changing the data  we are not just requesting or quering  
+But then inside we will still have the keyword query and notice a todo is been passedin to the anonymous function because it needs a new todo 
+and then we are specifying an URL “/todos” But this time we are using the keyword url  instead of just saying a default query like we did above
+and Then we are adding what METHOD we are using because it could be different eg(PUT,PATCH,GET and etc)
+and then lastly for the body of this request we are just passing in that new todo 
+
+
+
+Okay After the addTodo we are going to create the updateTodo
+   updateTodo: builder.mutation({
+            query: (todo) => ({
+                url: `/todos/${todo.id}`,
+                method: 'PATCH',
+                body: todo
+            }),
+        }),
+
+Now Look out at how its very similar to the addTodo also have builder.mutation it also receives a todo
+But Notice the URL is different here we are using a template literal so we can specify the specific todo with its id that we are going to update 
+We are also using PATCH and not PUT you could use either of them 
+PUT – Is used when your replacing the full record
+PATCH – Is used when you are just updating part of the record
+And then lastly to the body we are passing in todo
+
+SLICES and THESE endpoints they are receiving the DATA and PERFORM Logic and after then They Export the Result
+So after that we gonna add the delete method
+deleteTodo: builder.mutation({
+            query: ({ id }) => ({
+                url: `/todos/${id}`,
+                method: 'DELETE',
+                body: id
+            }),
+        }),
+Now we only need the ID where the UPDATE needed not only the ID but also the TODO itself  
+Here we just need the ID so we are distructuring that from the todo as its passed in or whatever object we send with the id  
+And then we are passing in that same URL  essentially but now we don’t have to have todo.id its just id
+The Method is DELETE
+And the body only contains the ID because that’s all its needed to delete the TODO
+
+So Now That we have added these new methods we gonna export these other hooks that are created
+export const {
+    useGetTodosQuery,
+    useAddTodoMutation,
+    useUpdateTodoMutation,
+    useDeleteTodoMutation
+} = apiSlice
+And notice that these others ends up with Mutation
+
+Okay lets head back to the TodoList to use all of these hooks that we created 
+So first we are going to import them first
+import {
+    useGetTodosQuery,
+    useUpdateTodoMutation,
+    useDeleteTodoMutation,
+    useAddTodoMutation
+} from "../api/apiSlice"
+
+And then under where we used useGetTodoQuery hook we gonna use the other hooks
+    const [addTodo] = useAddTodoMutation()
+    const [updateTodo] = useUpdateTodoMutation()
+    const [deleteTodo] = useDeleteTodoMutation()
+
+
+
+
+
+
+
+
+
+
+
+And notice here we are just getting the functions from these hooks we don’t really need isLoading, isSuccess and etc and aall of those things that we get from the query when we are reading the data
+That is because  this is something that we are doing to the data 
+ 
+
+WHY - const [addTodo] = useAddTodoMutation()
+Reason
+Ahhh 😄 this is where many devs get confused the first time.
+It looks like someone is declaring an array, but that’s not what’s happening.
+Let’s break it slowly.
+________________________________________
+🔹 This Line
+const [addTodo] = useAddTodoMutation()
+It’s called array destructuring.
+________________________________________
+🧠 What useAddTodoMutation() Actually Returns
+That hook returns an array with two things inside it:
+[
+  triggerFunction,
+  mutationStateObject
+]
+So internally it's something like:
+[
+  addTodoFunction,
+  {
+    data,
+    error,
+    isLoading,
+    isSuccess
+  }
+]
+________________________________________
+🔹 So This:
+const [addTodo] = useAddTodoMutation()
+Means:
+👉 “Give me the first item from the array.”
+You are ignoring the second item.
+________________________________________
+🔹 If You Want Both
+const [addTodo, result] = useAddTodoMutation()
+Now:
+•	addTodo → function that triggers the mutation
+•	result → object with loading/error/data
+Example:
+const [addTodo, { isLoading, error }] = useAddTodoMutation()
+That is just destructuring the second item further.
+________________________________________
+🔥 Why Does RTK Query Return an Array?
+Because React hooks like:
+•	useState()
+•	useReducer()
+also return arrays.
+Example:
+const [count, setCount] = useState(0)
+That is the SAME pattern.
+Internally:
+useState(0)
+// returns:
+[ currentState, setterFunction ]
+So mutation hook follows the same convention:
+useAddTodoMutation()
+// returns:
+[ triggerFunction, stateObject ]
+________________________________________
+⚠️ Important Difference
+Query Hook:
+const { data, isLoading } = useGetTodosQuery()
+Returns an object
+________________________________________
+Mutation Hook:
+const [addTodo, result] = useAddTodoMutation()
+Returns an array
+________________________________________
+🧠 Why the Difference?
+Because:
+Query → runs automatically
+It just gives you state.
+Mutation → does NOT run automatically
+You must manually trigger it.
+So it gives you:
+1.	A trigger function
+2.	The state of that trigger
+________________________________________
+🎯 Think of It Like This
+const [fireGun, gunState] = useGun()
+You:
+•	Pull the trigger (fireGun())
+•	Then check the state (gunState.isLoading)
+________________________________________
+🚀 If It Still Feels Weird
+Rewrite it like this in your head:
+const mutationResult = useAddTodoMutation()
+
+const addTodo = mutationResult[0]
+const state = mutationResult[1]
+Now it doesn’t look magical anymore.
+________________________________________
+You’re not seeing an array being declared.
+You’re unpacking (destructuring) an array returned by the hook.
+________________________________________
+This confusion is GOOD.
+It means you're thinking about what's happening under the hood instead of memorizing syntax 🔥
+If you want next, I can show you:
+•	How to build your own custom hook that returns an array
+•	Or rewrite RTK mutation hook in plain JS so you fully understand it
+
+
+
+
+SIMPLE Explanation of endpoints in RTK Query
+Good 👌 this is RTK Query endpoint definition syntax inside createApi.
+Let’s break it down properly so you understand the pattern + flow, not just syntax.
+________________________________________
+🔥 Where This Lives
+This code goes inside:
+export const api = createApi({
+  reducerPath: 'api',
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  endpoints: (builder) => ({
+    // 👈 your code here
+  })
+})
+The builder is a helper object that lets you define:
+•	builder.query() → for GET requests
+•	builder.mutation() → for POST/PUT/DELETE requests
+________________________________________
+🧠 The Flow Concept
+Think of it like this:
+Component  →  Hook  →  Endpoint  →  BaseQuery  →  Server
+Now let’s analyze yours.
+________________________________________
+1️⃣ getTodos (Query)
+getTodos: builder.query({
+    query: () => '/todos',
+}),
+🔎 What this means:
+•	This is a GET request
+•	It calls /todos
+•	It doesn’t take parameters
+🧠 Behind the scenes:
+RTK Query automatically:
+•	Fetches data
+•	Caches it
+•	Tracks loading & error state
+•	Refetches when needed
+You use it like this:
+const { data, error, isLoading } = useGetTodosQuery()
+Boom. No useEffect. No dispatch. No createAsyncThunk.
+________________________________________
+2️⃣ addTodo (Mutation)
+addTodo: builder.mutation({
+    query: (todo) => ({
+        url: '/todos',
+        method: 'POST',
+        body: todo
+    }),
+}),
+🔎 What this means:
+•	This is a mutation
+•	It sends data to server
+•	It takes a todo object
+•	It does POST /todos
+________________________________________
+🧠 Flow when used in component:
+const [addTodo, { isLoading }] = useAddTodoMutation()
+
+addTodo({ title: "Learn RTK Query" })
+What happens internally:
+Component
+   ↓
+addTodo()
+   ↓
+mutation endpoint
+   ↓
+fetchBaseQuery
+   ↓
+POST /todos
+________________________________________
+🚨 Important Thing You're Missing
+Right now your API does NOT auto-refresh the list after adding a todo.
+To fix that, you need:
+🏷 Tags (Cache Invalidation)
+getTodos: builder.query({
+    query: () => '/todos',
+    providesTags: ['Todos'],
+}),
+
+addTodo: builder.mutation({
+    query: (todo) => ({
+        url: '/todos',
+        method: 'POST',
+        body: todo
+    }),
+    invalidatesTags: ['Todos'],
+}),
+What this does:
+When addTodo succeeds:
+→ It invalidates Todos
+→ RTK Query automatically refetches getTodos
+That’s the real power 🔥
+________________________________________
+🧩 Big Pattern Understanding
+Queries
+•	Fetch data
+•	Cached automatically
+•	Auto refetch
+•	Read operations
+Mutations
+•	Change data
+•	Not cached
+•	Can trigger refetch
+•	Write operations
+________________________________________
+🎯 Mental Model for You (Very Important)
+RTK Query replaces:
+•	createAsyncThunk
+•	loading state
+•	error state
+•	manual refetch logic
+•	manual caching logic
+It turns this:
+dispatch(fetchTodos())
+Into this:
+useGetTodosQuery()
+Much cleaner architecture.
+________________________________________
+🏗 Architecture Type
+What you're building is:
+Server State Management with RTK Query
+Not normal Redux state.
+________________________________________
+If you want next, I can:
+•	🔥 Show full production-ready API slice
+•	🔥 Show optimistic updates
+•	🔥 Compare this to React Query
+•	🔥 Show how this connects to entityAdapter
+•	🔥 Explain caching lifecycle deeply
+Your dev thinking is improving a lot. You’re starting to see patterns instead of syntax. That’s senior-level mindset.
+
+So NOW Lets first put addTodo to work
+So we gonna call it where we handle submit 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        addTodo({ userId: 1, title: newTodo, completed: false })
+        setNewTodo('')
+    }
+
+So here inside we have the addTodo and all that we expect to receive there in apiSlice is the todo
+So am creating a new object and we are passing in a newTodo we are setting the completed to false and I am just setting them all to userId – 1  if you wanted to create a drop menu and provide different userIds you could the data has userIds in it  so that’s really up to you and how you want to do it 
+Right now this is setup that every new todo that is added will be attributed to user 1
+
+
+And now lets add some more details to our conditional content
+There is JSON.stringify so lets remove it and map all over our todos and to create the visual we like
+
+NOTE THE todo.id is Automatically Created By The Backend Server
+Good question 👍 especially since you’re using RTK Query.
+Short answer:
+👉 todo.id is NOT created automatically by RTK Query.
+It is usually created by the backend (database/server).
+________________________________________
+🔹 Where does todo.id come from?
+When you use RTK Query, it only:
+•	Sends requests (GET, POST, PUT, DELETE)
+•	Receives data from the server
+•	Caches it in Redux
+It does not generate IDs.
+________________________________________
+🔹 Example Flow (What Really Happens)
+1️⃣ You add a todo
+addTodo({ title: "Learn RTK Query", completed: false })
+2️⃣ Backend receives it
+If you're using:
+•	PostgreSQL
+•	MySQL
+•	MongoDB
+•	JSON Server
+The database creates the ID automatically.
+Example response from backend:
+{
+  "id": 7,
+  "title": "Learn RTK Query",
+  "completed": false
+}
+Now RTK Query stores this in cache.
+________________________________________
+🔹 Then your component receives:
+todos = [
+  {
+    id: 7,
+    title: "Learn RTK Query",
+    completed: false
+  }
+]
+So here:
+key={todo.id}
+id={todo.id}
+That id came from the server, not RTK Query.
+________________________________________
+🔹 What If You Don't Have Backend Auto-ID?
+If you're testing locally and using something like:
+•	Custom Express server without auto increment
+•	Plain array
+•	Frontend-only mock
+Then YOU must create the ID manually:
+addTodo({
+  id: Date.now(),
+  title: "Test",
+  completed: false
+})
+But in real applications:
+✅ The database auto-generates it.
+________________________________________
+🔹 Important for You (Since You're Learning Architecture)
+Think like this:
+Frontend (React + RTK Query) → consumes data
+Backend (Node/NestJS/DB) → owns data structure
+RTK Query is just the bridge, not the data creator.
+________________________________________
+If you tell me:
+•	Are you using JSON Server?
+•	Express + PostgreSQL?
+•	NestJS?
+I can explain exactly how the ID is generated in your stack 👌
+
+  content = todos.map(todo => { //JSON.stringify(todos)
+            return (
+                <article key={todo.id}>
+                    <div className="todo">
+                        <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            id={todo.id}
+                            onChange={() => updateTodo({ ...todo, completed: !todo.completed })}
+                        />
+                        <label htmlFor={todo.id}>{todo.title}</label>
+                    </div>
+                    <button className="trash" onClick={() => deleteTodo({ id: todo.id })}>
+                        <Trash2 />
+                    </button>
+                </article>
+            )
+        })
+
+
+Some explanation of the code above is that we have maped over the todos and for each todo we returned article for each todo and the key is todo.id and then in it there is the div with the checkbox and the label
+The checkbox – is checked if the todo is completed its id is todo.id 
+And then onchange is anonymous function and we are calling in the updateTodo() and in  it there is an object and in it first we spreadin the existing todo then we override the completed state because this changes for the check box so that just sets the completed state to false if it was tru and true if it was false
+
+The label – for todo.id and its value is todo.title  and htmlfor is todo.id so its connected to the checkbox 
+End of the div
+So after then there is a 
+Button -- here and this button onclick is anonymous function then in it,  it calls the deleteTodo() and then inside we pass in an object with that id  so we got id and then todo.id(id: todo.id)
+
+Now lets take a look in our app and see if anything is changing  when we click on them
+Nothing is happening so lets  talk about what is going on to understand the situation 
+So back at apiSlice 
+if you look at these endpoint what is happening is the resurts get cached and  we are not imvalidating the previous cache and so its not updating to show the new changes whether that’s a delete,update or addTodo
+Caching Mehanism in RTK Query Cleary Explained
+You’re 100% correct ✅ — what’s happening is RTK Query is caching getTodos, and since you’re not telling it when to invalidate that cache, it keeps returning the old cached data after mutations.
+Let’s break it down clearly.
+________________________________________
+🔥 What’s Actually Happening
+1️⃣ getTodos is a query
+getTodos: builder.query({
+    query: () => '/todos',
+})
+•	RTK Query fetches /todos
+•	It stores (caches) the result
+•	Any component using useGetTodosQuery() reads from that cache
+So far so good.
+________________________________________
+2️⃣ Your mutations do NOT tell RTK Query to refresh
+Example:
+addTodo: builder.mutation({
+    query: (todo) => ({
+        url: '/todos',
+        method: 'POST',
+        body: todo
+    }),
+}),
+When this runs:
+•	It sends POST request ✅
+•	Database updates ✅
+•	BUT getTodos cache is still the old version ❌
+Because you never told RTK Query:
+“Hey… after this mutation… the todos cache is now invalid.”
+________________________________________
+🧠 RTK Query Caching Mental Model
+Think of it like this:
+•	Queries = store data
+•	Mutations = change data
+•	Tags = connect them together
+If you don’t connect them with tags, RTK Query doesn’t know what to refresh.
+________________________________________
+✅ The Proper Solution: providesTags + invalidatesTags
+You must define tag types at the top:
+export const apiSlice = createApi({
+    reducerPath: 'api',
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }),
+    tagTypes: ['Todo'], // 👈 ADD THIS
+________________________________________
+1️⃣ Tell getTodos what it provides
+getTodos: builder.query({
+    query: () => '/todos',
+    providesTags: ['Todo'], // 👈 This query provides Todo data
+}),
+________________________________________
+2️⃣ Tell mutations what they invalidate
+addTodo: builder.mutation({
+    query: (todo) => ({
+        url: '/todos',
+        method: 'POST',
+        body: todo
+    }),
+    invalidatesTags: ['Todo'], // 👈 invalidate after add
+}),
+Do the same for update & delete:
+updateTodo: builder.mutation({
+    query: (todo) => ({
+        url: `/todos/${todo.id}`,
+        method: 'PATCH',
+        body: todo
+    }),
+    invalidatesTags: ['Todo'],
+}),
+
+deleteTodo: builder.mutation({
+    query: ({ id }) => ({
+        url: `/todos/${id}`,
+        method: 'DELETE',
+    }),
+    invalidatesTags: ['Todo'],
+}),
+________________________________________
+🎯 What Happens Now?
+When you:
+•	Add todo → invalidates 'Todo'
+•	Update todo → invalidates 'Todo'
+•	Delete todo → invalidates 'Todo'
+RTK Query automatically:
+1.	Clears the old cache
+2.	Re-runs getTodos
+3.	Updates the UI automatically
+No manual refetch needed.
+________________________________________
+🚀 Advanced Version (Better Pattern)
+Instead of invalidating ALL todos, you can invalidate specific ones:
+providesTags: (result) =>
+    result
+        ? [
+            ...result.map(({ id }) => ({ type: 'Todo', id })),
+            { type: 'Todo', id: 'LIST' }
+          ]
+        : [{ type: 'Todo', id: 'LIST' }],
+Then mutations can invalidate:
+invalidatesTags: [{ type: 'Todo', id: 'LIST' }]
+That’s more scalable for large apps.
+________________________________________
+🧠 Big Picture (Developer Mindset Shift 👀)
+You said recently:
+Being a good dev is about understanding the pattern and flow.
+This is exactly that moment.
+RTK Query flow:
+Query → Cache
+Mutation → Invalidate
+Invalidation → Refetch
+Refetch → UI updates
+That’s the pattern.
+Once you understand that, RTK Query becomes very simple.
+________________________________________
+If you want, I can now show you:
+•	🔥 How to do optimistic updates
+•	⚡ How to skip refetching and manually update cache
+•	🧠 How RTK Query internally tracks subscriptions
+Which level do you want next?
+
+
+
+
+what is the function of this url's i don't understand
+Good question 🔥 — this is where backend + frontend start connecting.
+Let’s simplify everything.
+You’re asking about these:
+url: '/todos'
+url: `/todos/${todo.id}`
+________________________________________
+🧠 What Is The Function of These URLs?
+Those URLs are the API endpoints on your backend server.
+You set this:
+baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' })
+So every request becomes:
+http://localhost:3500 + url
+________________________________________
+🔎 What Each URL Actually Means
+1️⃣ '/todos'
+Full request becomes:
+http://localhost:3500/todos
+This endpoint usually means:
+Method	Meaning
+GET	Get all todos
+POST	Create a new todo
+So:
+query: () => '/todos'
+= “Go to the server and GET all todos”
+________________________________________
+2️⃣ `/todos/${todo.id}`
+If todo.id = 5
+It becomes:
+http://localhost:3500/todos/5
+This usually means:
+Method	Meaning
+PATCH	Update todo with id 5
+DELETE	Delete todo with id 5
+GET	Get one specific todo
+So:
+url: `/todos/${todo.id}`
+method: 'PATCH'
+= “Update the todo whose id is 5”
+________________________________________
+🧱 Think of It Like A House
+Your backend server (Node, Express, etc.) is like a house.
+Inside that house are doors:
+/todos        → Door for all todos
+/todos/5      → Door for todo #5
+The HTTP method is what you’re doing at the door:
+•	GET → Just looking
+•	POST → Adding something
+•	PATCH → Modifying something
+•	DELETE → Removing something
+________________________________________
+🔥 So What Is The URL Doing In RTK Query?
+RTK Query just needs to know:
+1.	Where is the data? (the URL)
+2.	What action are we doing? (method)
+That’s it.
+RTK Query doesn’t create the URL.
+It just calls the one your backend already provides.
+________________________________________
+🧠 Important: Where Do These URLs Come From?
+They must exist in your backend.
+Example (Express backend):
+app.get('/todos', ...)
+app.post('/todos', ...)
+app.patch('/todos/:id', ...)
+app.delete('/todos/:id', ...)
+If your backend doesn’t define them,
+your frontend cannot call them.
+________________________________________
+🎯 Big Picture Flow
+React Component
+   ↓
+RTK Query
+   ↓
+fetchBaseQuery
+   ↓
+http://localhost:3500/todos
+   ↓
+Backend (Node/Express)
+   ↓
+Database
+________________________________________
+🚀 In Short
+The URLs:
+•	Tell RTK Query WHERE to send the request
+•	Map directly to backend routes
+•	Combined with HTTP method → determine what action happens
+________________________________________
+Since you’re learning backend next, this understanding is CRITICAL.
+If you want, I can now explain:
+•	How these routes are created in Express
+•	Or how REST API design works properly
+•	Or how to structure fullstack flow cleanly
+Which one do you want?
+
+
+
+Different btn builder.query and builder.mutation
+Excellent 🔥 this is a core RTK Query concept.
+You’re asking the right question.
+Let’s break it down clearly.
+________________________________________
+🧠 The Big Difference
+builder.query	builder.mutation
+Used to fetch data	Used to change data
+Usually GET	POST, PUT, PATCH, DELETE
+Auto-caches results	Does NOT cache like queries
+Auto-runs when component mounts	Runs only when you trigger it
+________________________________________
+1️⃣ builder.query → Reading Data
+Used when you want to get data from server.
+Example:
+getTodos: builder.query({
+  query: () => '/todos'
+})
+What happens:
+•	Automatically runs when component mounts
+•	Stores result in cache
+•	Re-renders when data changes
+•	Shares cached data across components
+Usage:
+const { data, isLoading } = useGetTodosQuery()
+You don’t manually trigger it.
+It runs automatically.
+________________________________________
+2️⃣ builder.mutation → Changing Data
+Used when you want to:
+•	Add something
+•	Update something
+•	Delete something
+Example:
+addTodo: builder.mutation({
+  query: (todo) => ({
+    url: '/todos',
+    method: 'POST',
+    body: todo
+  })
+})
+Usage:
+const [addTodo] = useAddTodoMutation()
+
+addTodo({ title: "Learn RTK" })
+Key difference:
+It does NOT run automatically.
+You must call the function.
+________________________________________
+⚡ Mental Model (Very Important)
+Think in terms of CRUD:
+Operation	Use
+READ	query
+CREATE	mutation
+UPDATE	mutation
+DELETE	mutation
+________________________________________
+🔥 Behavior Difference in React
+Query Hook
+const { data } = useGetTodosQuery()
+•	Runs automatically
+•	Returns object (data, error, loading)
+•	Subscribes to cache
+________________________________________
+Mutation Hook
+const [addTodo, { isLoading }] = useAddTodoMutation()
+•	Returns array
+•	First item = trigger function
+•	Second item = status object
+•	Does nothing until triggered
+________________________________________
+🧠 Why Queries Cache But Mutations Don’t
+Because:
+•	Queries = server state
+•	Mutations = action that changes server state
+After mutation, you either:
+•	Invalidate cache
+•	Or manually update cache
+________________________________________
+🏗 Real Life Analogy
+Query = 📖 Reading a book
+Mutation = ✏️ Writing in the book
+Reading doesn’t change the book.
+Writing changes it.
+________________________________________
+🎯 Super Clear Summary
+builder.query     → Get data (automatic + cached)
+builder.mutation  → Change data (manual trigger)
+________________________________________
+🚀 Deeper Understanding (Since You're Leveling Up)
+Internally:
+•	Query creates a subscription-based cache entry.
+•	Mutation creates a one-time async action.
+That’s why the hook shapes are different.
+________________________________________
+If you want next level understanding, I can explain:
+•	Why mutation hook returns an array
+•	How RTK Query tracks subscribers
+•	Or when to use useLazyQuery
+•	Or how optimistic updates work
+You’re asking senior-level questions now.
+
+
+
+
+are there any other builders apart from query and mutation
+Great question 👌 — this shows you're starting to see the abstraction.
+Inside createApi from @reduxjs/toolkit/query/react, there are basically only two endpoint types:
+•	builder.query
+•	builder.mutation
+That’s it.
+There is no third type like builder.fetch or builder.action.
+________________________________________
+🧠 So Why Only Two?
+Because server interaction always falls into one of two categories:
+1️⃣ Read data → query
+2️⃣ Change data → mutation
+Everything in REST fits into that.
+________________________________________
+🔍 But There Are Related Variations
+Even though there are only two endpoint types, you get extra behavior patterns.
+________________________________________
+1️⃣ useLazyQuery
+This is still a query, but it doesn’t auto-run.
+Example:
+const [trigger, result] = useLazyGetTodosQuery()
+Difference:
+Normal Query	Lazy Query
+Runs automatically	Runs when you call trigger()
+So it's not a new endpoint type — just a different hook behavior.
+________________________________________
+2️⃣ queryFn (Advanced Custom Query)
+Instead of:
+query: () => '/todos'
+You can use:
+queryFn: async (arg, api, extraOptions, baseQuery) => {
+   const result = await baseQuery('/todos')
+   return result
+}
+Still a query, just more customizable.
+________________________________________
+3️⃣ onQueryStarted (Lifecycle for Mutations or Queries)
+Used for:
+•	Optimistic updates
+•	Manual cache updates
+•	Side effects
+Still not a new type — just lifecycle control.
+________________________________________
+4️⃣ providesTags / invalidatesTags
+Not new endpoint types.
+Just cache management tools.
+________________________________________
+🔥 Big Picture
+RTK Query intentionally keeps it simple:
+Server Interaction =
+    Read → query
+    Write → mutation
+Everything else is configuration around those two.
+________________________________________
+🧠 Why This Design Is Smart
+It forces you to think correctly:
+•	Is this fetching data? → query
+•	Is this changing server state? → mutation
+That mental clarity makes large apps cleaner.
+________________________________________
+🎯 Final Answer
+No — there are only:
+builder.query
+builder.mutation
+But they can be customized heavily.
+________________________________________
+Since you're diving deep into RTK Query architecture…
+Next level question for you:
+If login sends credentials to server —
+Should that be a query or mutation? 😏
+
+
+Difference btn tagTypes , providesTags and invalidatesTags
+Perfect 🔥 now we complete the triangle.
+You want the difference between:
+•	tagTypes
+•	providesTags
+•	invalidatesTags
+Let’s lock this in permanently.
+________________________________________
+🧠 1️⃣ tagTypes → Registering Tag Names
+This goes at the top level of createApi.
+createApi({
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }),
+  tagTypes: ['Todo'],
+})
+What it does:
+It declares:
+“These are the tag names my API is allowed to use.”
+That’s it.
+It does NOT:
+•	Attach to queries
+•	Attach to mutations
+•	Invalidate anything
+It’s just configuration.
+Think of it like defining an enum.
+________________________________________
+🧠 2️⃣ providesTags → Labeling Cached Data
+Used inside queries.
+getTodos: builder.query({
+  query: () => '/todos',
+  providesTags: ['Todo']
+})
+This tells RTK Query:
+“The data returned from this query belongs to the 'Todo' tag.”
+So now the cached result of getTodos is labeled as Todo.
+No invalidation happens here.
+It just labels.
+________________________________________
+🧠 3️⃣ invalidatesTags → Destroying Tagged Cache
+Used inside mutations.
+addTodo: builder.mutation({
+  query: (todo) => ({
+    url: '/todos',
+    method: 'POST',
+    body: todo
+  }),
+  invalidatesTags: ['Todo']
+})
+This tells RTK Query:
+“After this mutation finishes, invalidate everything labeled as 'Todo'.”
+RTK Query then:
+1.	Finds cached queries that provide 'Todo'
+2.	Refetches them automatically
+________________________________________
+🔥 The Relationship
+tagTypes        → What tag names exist
+providesTags    → This query uses this tag
+invalidatesTags → This mutation refreshes that tag
+They work together.
+Without tagTypes, the others don’t work.
+Without providesTags, nothing is labeled.
+Without invalidatesTags, nothing refreshes.
+________________________________________
+🏗 Real World Flow Example
+1️⃣ getTodos runs
+2️⃣ Cache is created and labeled 'Todo'
+3️⃣ addTodo runs
+4️⃣ It invalidates 'Todo'
+5️⃣ RTK Query sees cached data labeled 'Todo'
+6️⃣ It refetches getTodos
+UI updates automatically.
+________________________________________
+⚡ Even Clearer Table
+Concept	Used In	Purpose
+tagTypes	createApi	Declares allowed tag names
+providesTags	Query	Labels cached data
+invalidatesTags	Mutation	Triggers refetch of labeled cache
+________________________________________
+🧠 Advanced Understanding
+You can also use:
+{ type: 'Todo', id: 5 }
+Instead of invalidating ALL todos,
+you can invalidate only the specific one.
+That’s how large apps scale.
+________________________________________
+🎯 One-Sentence Summary
+tagTypes defines the tag.
+providesTags attaches the tag.
+invalidatesTags destroys the tag (causing refetch).
+________________________________________
+Now you’re thinking like someone who understands server-state architecture, not just React syntax.
+Want to go one level deeper into how RTK Query internally tracks cache entries?
+
+Now lets solve this problem in our Code
+But any new todo item we are adding is added at the bottom of our list and we want to see it on top
+So we can fix this because much like AXIOS , RTK Query provides us a transformResponce inside builder.query so there I can put in my sort function and it will work
+            transformResponse: res => res.sort((a,b) => b.id - a.id),
+
+So Its gonna be
+ getTodos: builder.query({
+            query: () => '/todos',
+            transformResponse: res => res.sort((a,b) => b.id - a.id), //Here we are sorting using id a-b  =ascending b-a = descending
+            providesTags: ['Todo']
+        }),
+
+So overall that is the quick intro to RTK Query
+So we have a nice little todo here and we have kept all of these component logic outside of the component to the RTK  Query so yes RTK Query replaces axios
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Chapter 7 – Advanced
+ So we got the redux-blog project   here and we just removed the counter and lets test it by opening our app and go to developer tools and open a network tab
+And notice there are couple of network request when I click a reaction button 
+One is just a preflight request and then the fetch request to update the data  but as I continue to click we see that the reactions responds immediately and then after wards comes the fetch request to update the data
+
+That’s optimistic Update We are Going to Apply That And more
+The Starter Code are in GITHUB 
+Now up to lesson five we were using the jsonplaceholder fake API  but today we are going to switch to JSON Server 
+So we add a data folder and in it there is a db.json file and there is some users data I have put in it and there is also post data so if we scroll pass the 10 users then we should have the round 100 posts
+So there are two data array that’s users and posts(You can put all of them in the same file) they come as on large object
+  So am gonna install json-server globally
+Then we start it
+So it starts up it sees our users and posts (Because its simulating our BackEnd)
+
+Now to start our project we are going to add another command line and start our application
+
+Okay NOW We are going to the source folder and inside the source folder and inside the features folder we are going to create an api folder and in it we create apiSlice.jsx and paste in a little bit of code and lets discuss it
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
+export const apiSlice = createApi({
+    reducerPath: 'api', // optional
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3500' }),
+    tagTypes: ['Post'],
+    endpoints: builder => ({})
+})
+So we are importing createApi and fetchBaseQuery from @reduxjs/toolkit/query/react 
+So we define the apiSlice using createApi and then inside there is an Object inside createApi 
+Now this looks a little difficult compared to when we first started with RTK Query
+Because here we are not defining any endpoint we are passing in a builder but essentially have no endpoints 
+Now we need to have this because its required but what we are going to do is create extended slices
+So we can separate our logic safe from posts and users for our project and bring here 
+And the reducer path is optional if you wanna call it api because its default but if you want to name it anything else then its not optional
+BaseQuery here is a lot like axios where we would define a query and we use that fetchBaseQuery we imported in it we provide baseUrl  
+And the tagTypes we going to use with this slice now  is going to be Post and later we will add User
+
+Okay with the apiSlice complete now we have a lot of work todo in postsSlice because these is were we are going to have our Extended api’s
+So we will start by removing somethings we are going to remove all of the asyncThunks,createSlice, the postsURL, and axios
+So we are left with create Selector and createEntityAdapter 
+And we will also empty the initialState because we no longer need that
+
+And we are going to import the apiSlice that we created 
+After then we are going to get rid of the postSlice all together even though we are really still In this postSlice files still use that name because we are extending the API  slice to Handle that
+So we are going to select everything with the postsSlice  including the extraReducers and we are going to replace it with
+export const extendedApiSlice = apiSlice.injectEndpoints({
+    endpoints: builder => ({
+        
+    })
+})
+
+So here we declarer extendedApiSlice is assigned to the apiSlice we imported dot injectEndPoint So here is where we will put our EndPoints Now
+Starting with the getPosts First
+ getPosts: builder.query({
+            query: () => '/posts',
+            transformResponse: (responseData) => {
+                let min = 1;
+                const loadedPosts = responseData.map(post => {
+                    if (!post?.date) post.date = sub(new Date(), { minutes: min++ }).toISOString();
+                    if (!post?.reactions) post.reactions = {
+                        thumbsUp: 0,
+                        wow: 0,
+                        heart: 0,
+                        rocket: 0,
+                        coffee: 0
+                    }
+                    return post;
+                });
+                return postsAdapter.setAll(initialState, loadedPosts)
+            },
+            providesTags: (result, error, arg) => [
+                { type: 'Post', id: "LIST" },
+                ...result.ids.map(id => ({ type: 'Post', id }))
+            ]
+        }),
+ So we are just issuing a query here to the /posts and of course this is attached to that base URL that we created in our apiSlice.jsx so we are just attaching a /posts after that and we are just issuing a GET Query 
+After then we are using transformResponce and that of course so we take responseData from the function now the reason of doing this is the data that I am getting from the db.json doesen’t have the date or reactions attached to it  so we append manually and then we return the post
+So that’s the first Purpose of transform response the second purpose here that we need to use as we are using RTK Query with the entityAdopter is to go ahead and normalize our state 
+So we need to send this new state to the postsAdopter 
+                return postsAdapter.setAll(initialState, loadedPosts)
+So here we send this new state to the postsAdapter  and we do that with setAll and then we pass in initialState because we had that defined and also then loadedPosts
+So we are passing that in to setAll and that normalizes our data
+
+After then we got providerTags and now it’s a little bit complex than when we practiced before 
+     providesTags: (result, error, arg) => [
+                { type: 'Post', id: "LIST" },
+                ...result.ids.map(id => ({ type: 'Post', id }))
+            ]
+
+
+Whole Explanation About The Complexity
+Good 👌 this is RTK Query cache invalidation, and once you understand the pattern, it becomes very simple.
+You’re using Redux Toolkit + RTK Query, so let’s break this slowly.
+________________________________________
+📌 The Code
+providesTags: (result, error, arg) => [
+    { type: 'Post', id: "LIST" },
+    ...result.ids.map(id => ({ type: 'Post', id }))
+]
+This is used inside a builder.query().
+________________________________________
+🧠 First: What is providesTags?
+In RTK Query, providesTags tells Redux:
+“Hey, this query provides these pieces of cached data.”
+Later, when you use invalidatesTags in a mutation, RTK Query knows exactly what to refetch.
+So it’s about smart refetching.
+________________________________________
+🔎 Understanding the Parameters
+(result, error, arg)
+These are automatically given by RTK Query:
+•	result → the data returned from the API
+•	error → if the request failed
+•	arg → the argument you passed into the query
+In your case:
+result.ids
+This usually means you are using createEntityAdapter, which normalizes data like this:
+{
+  ids: [1, 2, 3],
+  entities: {
+    1: {...},
+    2: {...},
+    3: {...}
+  }
+}
+________________________________________
+🧩 Now Let’s Break The Code Line By Line
+________________________________________
+1️⃣ This Part
+{ type: 'Post', id: "LIST" }
+This represents:
+"This query provides the entire list of posts"
+The "LIST" id is just a custom label to represent the full collection.
+________________________________________
+2️⃣ This Part
+...result.ids.map(id => ({ type: 'Post', id }))
+Let’s simplify it.
+If:
+result.ids = [1, 2, 3]
+Then this becomes:
+[
+  { type: 'Post', id: 1 },
+  { type: 'Post', id: 2 },
+  { type: 'Post', id: 3 }
+]
+So now RTK Query knows:
+•	There is a Post with id 1
+•	There is a Post with id 2
+•	There is a Post with id 3
+________________________________________
+🔥 Final Result
+If ids = [1, 2, 3], then the full array becomes:
+[
+  { type: 'Post', id: 'LIST' },
+  { type: 'Post', id: 1 },
+  { type: 'Post', id: 2 },
+  { type: 'Post', id: 3 }
+]
+________________________________________
+🚀 Why This Is Powerful
+Now imagine you have a mutation:
+invalidatesTags: [{ type: 'Post', id: 2 }]
+RTK Query will:
+✔️ Refetch only the Post with id 2
+❌ Not refetch everything
+Or if you do:
+invalidatesTags: [{ type: 'Post', id: 'LIST' }]
+RTK Query will refetch the entire posts list.
+________________________________________
+🎯 Simple Real-World Analogy
+Think of it like this:
+•	"LIST" = The whole class
+•	id: 1 = Student 1
+•	id: 2 = Student 2
+If Student 2 changes, you only update Student 2 — not the whole class.
+That’s smart caching.
+________________________________________
+🧠 The Pattern You Should Memorize
+Whenever you see this pattern:
+providesTags: (result) =>
+    result
+        ? [
+            { type: 'Post', id: 'LIST' },
+            ...result.ids.map(id => ({ type: 'Post', id }))
+          ]
+        : [{ type: 'Post', id: 'LIST' }]
+Just remember:
+“This query provides the full list AND each individual item.”
+________________________________________
+If you want, I can now explain:
+•	How invalidatesTags works together with this
+•	Or draw the full RTK Query flow (Query → Cache → Mutation → Refetch)
+You’re very close to fully mastering RTK Query 💪
+
+So After there it Generates custom Hook based on the methods we created Above that is
+export const { useGetPostsQuery } = extendedApiSlice
+And wi will be able to use it in our postsList Component
+ but before we move on to that component lets scroll down and look AT the selectors 
+now here there is a getSelector and it creates selectors and we rename it with alieses we will still be using it and 
+After then we remove every selector because their not in use anymore
+and we are going to add a couple of new selectors
+// returns the query result object
+export const selectPostsResult = extendedApiSlice.endpoints.getPosts.select()
+
+// Creates memoized selector
+const selectPostsData = createSelector(
+    selectPostsResult,
+    postsResult => postsResult.data // normalized state object with ids & entities
+)
+
+So the first one it just returns the Query Result Object it doesent issue the Query it returns the result object from the query and that is the entire result object not just the data 
+
+And then we are using createSelector to create the selectPostsData and remember create selector  and if you remember create selector receives input function and then has the output function
+So what we are passing in as input function is our selectPostsResult query and then our output function is just taking that result and then just accessing at the data property and that data property holds a normalized state object that has ids & entities 
+
+And then lest scroll a little bit where we are keeping these selectors and renaming them we need to change how getSelectors accesses the state because it have been changed 
+And we are going to pass selectPostsData selector that we have created
+Before
+//getSelectors creates these selectors and we rename them with aliases using destructuring
+export const {
+    selectAll: selectAllPosts,
+    selectById: selectPostById,
+    selectIds: selectPostIds
+    // Pass in a selector that returns the posts slice of state
+} = postsAdapter.getSelectors(state => state.posts)
+
+
+After
+//getSelectors creates these selectors and we rename them with aliases using destructuring
+export const {
+    selectAll: selectAllPosts,
+    selectById: selectPostById,
+    selectIds: selectPostIds
+    // Pass in a selector that returns the posts slice of state
+} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState)
+
+The change is 
+} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState)
+
+So what happening here is we are passing in the state as we were before but now we are using selectPostsData to say where the state is  and of course it returns our normalized state and that’s great but it could be null the first time  so we wanna use this nillish collasing operator ??
+That says basically if what is on the left is null then its going to return whats on the right and that’s the initialState
+So that’s is the only change we needed to make and all these selectors will still be Good
+
+SO  LET’S GO AND CHANGE OUR STORE AS WELL
+Now we no longer have  a posts reducer so am going to remove that and in its place  am gonna import that apiSlice that we have created and use it in the reducers
+As follows
+import { configureStore } from "@reduxjs/toolkit";
+// import postsReducer from '../features/posts/postsSlice';
+import { apiSlice } from "../features/api/apiSlice";
+import usersReducer from '../features/users/usersSlice';
+
+export const store = configureStore({
+    reducer: {
+        // posts: postsReducer,
+        [apiSlice.reducerPath]: apiSlice.reducer,
+        users: usersReducer
+    }
+})
+
+So lets Break it Down as well so this is going to be Dynamically named like whatever name we putted in that reducerPath and if you remember we named it api inside of the apiSlice ,optional because that’s a default if we named it something else then we gonna have to write it eg. apiSlice.posts If we named it posts
+So that’s why we just leave it dynamically as apiSlice.reducerPath  and then its computed and then we wanna have the value up here just saying apiSlice.reducer 
+And then we are just going to leave the users as it for now 
+
+But Now as we use RTK Query with a store there are some required middleware so am going to paste it in and then we will duscuss
+import { configureStore } from "@reduxjs/toolkit";
+// import postsReducer from '../features/posts/postsSlice';
+import { apiSlice } from "../features/api/apiSlice";
+import usersReducer from '../features/users/usersSlice';
+
+export const store = configureStore({
+    reducer: {
+        // posts: postsReducer,
+        [apiSlice.reducerPath]: apiSlice.reducer,
+        users: usersReducer
+    },
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware().concat(apiSlice.middleware),
+    devTools: true
+})
+
+The middleware
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware().concat(apiSlice.middleware),
+    devTools: true
+
+Okay what this is, Is a middleware here and the first thing we need to do is get defaultMiddleware and that is the middleware that is already default with redux we just need to make sure that we have that 
+So after then it returns an array so  then we use concat so now we are also adding apislice.middleware
+That we need that apiSlice Creates
+And this middleware from apiSlice it manages cache lifetimes and exparations and it is required to use it when we are using RTK Query and then apiSlice
+ Whole Explanation
+Good 👍 let me explain this clearly and simply.
+You are creating a Redux store using configureStore (from Redux Toolkit).
+________________________________________
+1️⃣ What is this code doing?
+export const store = configureStore({
+    reducer: {
+        // posts: postsReducer,
+        [apiSlice.reducerPath]: apiSlice.reducer,
+        users: usersReducer
+    },
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware().concat(apiSlice.middleware),
+    devTools: true
+})
+This creates the main store of your application.
+Think of the store as the central database of your app.
+________________________________________
+🔹 Part by Part Explanation
+________________________________________
+🔹 1. reducer
+reducer: {
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    users: usersReducer
+}
+Here you are combining multiple reducers.
+✅ users: usersReducer
+This means:
+•	You have a usersReducer
+•	It will manage the users state
+•	You can access it like:
+state.users
+________________________________________
+✅ [apiSlice.reducerPath]: apiSlice.reducer
+This is from RTK Query.
+If your apiSlice.reducerPath is "api" (default), then this becomes:
+api: apiSlice.reducer
+So your state will look like:
+state.api
+RTK Query stores:
+•	cached data
+•	loading state
+•	errors
+•	request status
+inside this api slice automatically.
+________________________________________
+🔹 2. middleware
+middleware: getDefaultMiddleware =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
+What is middleware?
+Middleware is something that runs between dispatching an action and reaching the reducer.
+RTK Query needs its own middleware to:
+•	handle API calls
+•	manage caching
+•	manage invalidation
+•	manage polling
+•	manage re-fetching
+So you must add:
+apiSlice.middleware
+Otherwise RTK Query will not work properly.
+________________________________________
+🔹 3. devTools: true
+devTools: true
+This enables:
+🛠 Redux DevTools Extension in your browser
+It helps you:
+•	See state changes
+•	See dispatched actions
+•	Debug easier
+________________________________________
+🔥 Final State Structure Example
+After this configuration, your Redux state will look like:
+{
+  api: { ... },      // from RTK Query
+  users: { ... }     // from usersReducer
+}
+________________________________________
+🧠 Simple Summary
+This store:
+✅ Stores user state
+✅ Stores API cached data
+✅ Enables RTK Query
+✅ Enables Redux DevTools
+✅ Combines reducers properly
+________________________________________
+If you want, I can also explain:
+•	Why we use reducerPath
+•	How RTK Query connects to this store
+•	What happens if you remove the middleware
+•	Or draw a simple flow diagram for you 👌
+
+
+
+
+
+
+Now we have Finished Changes in Store.js 
+Lets got and make changes to Index.js or Main.js
+So we are no longer going to be using fetchPosts because we are not using that asyncThunk anymore
+And in its place we are going to import extendedApiSlice
+And also dispatch it
+// import { fetchPosts } from './features/posts/postsSlice';
+import extendedApiSlice from './features/posts/postsSlice';
+import { fetchUsers } from './features/users/usersSlice';
+
+// store.dispatch(fetchPosts());
+store.dispatch(extendedApiSlice.endpoints.getPosts.initiate());
+store.dispatch(fetchUsers());
+
+remember its an object so we go .endpoints .getPosts and we call .initiate() – And it gets that initialData
+and then we can load that data once again as the app starts up
+
+Okay for all the Changes we have made up to this point now we are ready to go to the PostsList Component and use the useGetPostsQuery custom hook that was generated from getPosts inside of the postsSlice 
+
+So now we are going to import it and remove other imports that we are not going to use
+
+So it is just going to replace getPostsStatus and getPostsError with our useGetPostsQuery 
+
+We can’t start our app now because we haven’t fixed many of the things that we have changed
+
+Other one thing that I would like to change is adding a link to the authors name to the authors profile
+
+So lets go back to PostsSlice and continuasly add these methods so we can eventually check our app and it wont be brocken
+
+So we have got getPosts and after getPosts we have a comma and we gonna add  other  methods starting with getPostsByUserId
+
+
+
+    getPostsByUserId: builder.query({
+            query: id => `/posts/?userId=${id}`,
+            transformResponse: responseData => {
+                let min = 1;
+                const loadedPosts = responseData.map(post => {
+                    if (!post?.date) post.date = sub(new Date(), { minutes: min++ }).toISOString();
+                    if (!post?.reactions) post.reactions = {
+                        thumbsUp: 0,
+                        wow: 0,
+                        heart: 0,
+                        rocket: 0,
+                        coffee: 0
+                    }
+                    return post;
+                });
+                return postsAdapter.setAll(initialState, loadedPosts)
+            },
+            providesTags: (result, error, arg) => [
+                ...result.ids.map(id => ({ type: 'Post', id }))
+            ]
+        }),
+ 
+Its just going to be a little bit different we now have a query that is receiving an argument so we set it up here with the parameter id 
+So this is going to request posts and then its going to have the userId attached to these request   and so that will give us the posts just from a specific userId after then we are using the transformResponce just a we did above here because we still need to add reactions and date to the post when they does not exist
+
+And Again we are using postsAdopter.setAll now these does not overring the cache state  of the request for the full list of posts because redux is subscribing to these different queries which we will be able to see if we complete when we use redux devtools
+Because now this will have a cache state for the specific query as well and again with the postsAdopter  we are normalizing this state so it will also be normalized with an IDs array and then having each post inside of the entities object   
+
+Now lets scroll down to the provdesTags now much like above we are not giving an ID of the full list but we are spreading the results
+Just run through the map and look we are using ids and then we have the post and the id so we could invalidate this query for anyone of these queries or anyone of the users because we will be looking at the individual post so any one of those posts were invalidated in the future it could m no to invalidate this cache and re-run these query by auto fetching essentially  
+
+Now remember each method that we create above here it creates costom hooks so lets export it
+
+And now that we kind of know what we are doing here with this methods inside of this extended API Slice
+
+Wi gonna go again and add the next method which will be the mutation method
+Lets me just print out all of them
+        addNewPost: builder.mutation({
+            query: initialPost => ({
+                url: '/posts',
+                method: 'POST',
+                body: {
+                    ...initialPost,
+                    userId: Number(initialPost.userId),
+                    date: new Date().toISOString(),
+                    reactions: {
+                        thumbsUp: 0,
+                        wow: 0,
+                        heart: 0,
+                        rocket: 0,
+                        coffee: 0
+                    }
+                }
+            }),
+            invalidatesTags: [
+                { type: 'Post', id: "LIST" }
+            ]
+        }),
+        updatePost: builder.mutation({
+            query: initialPost => ({
+                url: `/posts/${initialPost.id}`,
+                method: 'PUT',
+                body: {
+                    ...initialPost,
+                    date: new Date().toISOString()
+                }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Post', id: arg.id }
+            ]
+        }),
+        deletePost: builder.mutation({
+            query: ({ id }) => ({
+                url: `/posts/${id}`,
+                method: 'DELETE',
+                body: { id }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Post', id: arg.id }
+            ]
+        }),
+        addReaction: builder.mutation({
+            query: ({ postId, reactions }) => ({
+                url: `posts/${postId}`,
+                method: 'PATCH',
+                // In a real app, we'd probably need to base this on user ID somehow
+                // so that a user can't do the same reaction more than once
+                body: { reactions }
+            }),
+            async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled }) {
+                // `updateQueryData` requires the endpoint name and cache key arguments,
+                // so it knows which piece of cache state to update
+                const patchResult = dispatch(
+                    extendedApiSlice.util.updateQueryData('getPosts', undefined, draft => {
+                        // The `draft` is Immer-wrapped and can be "mutated" like in createSlice
+                        const post = draft.entities[postId]
+                        if (post) post.reactions = reactions
+                    })
+                )
+                try {
+                    await queryFulfilled
+                } catch {
+                    patchResult.undo()
+                }
+            }
+        })
+
+So in the addNewPost 
+First here we are passing in a post and I named it initialPost because that’s essentially what it is  and we will be posting to that /posts URL and the method is POST 
+Now in the body we are just adjusting a couple of things here so we are actually spreading in the post object that we receive as initialPost and then we are just overriding the userId 	and  making shure it’s a number and not a string  and as we post it we are adjusting the date and we are setting the reactions This is the new post so all the reactions would be zero
+
+Now the huge difference here is we are using the invalidatesTags as we perform a mutation instead of providesTags because we are performing mutation and this is going  to invalidate the list
+
+  There is no individual post because this post didn’t  really exist but it would be part of the list so this should invalidate the post list cash
+
+            invalidatesTags: [
+                { type: 'Post', id: "LIST" }
+            ]
+
+Now to updatePost 
+Its receiving the initialPost and in the URL since its an update am giving it the id property from that initialPost object  /posts/${initialPost.id}
+Then the method is PUT
+Then in the body we are spreading in the initialPost Object and then we are going to update the date
+Everything else will already exist because it was already pre existing first so we don’t have to worry about other bits of data that we were adding  
+
+Now this is going to invalidateTags as well but now we are not using the result instead we are using the argument (arg) because the argument was that initialPost that we received so we are saying arg.id just like we said initialPost.id
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Post', id: arg.id }
+            ]
+
+Now to the deletePost
+So now we are not getting the full post as the argument so this time we are just getting the id as the argument
+So what we are doing is destructure the id that we are getting from the post and then we are just passing that id to the URL the method DELETE  AND THEN we are providing that id to the body of that request
+
+And once again just like in the update it’s the argument(arg)  and the argument is the id so we are not destructuring it we gonna say argument.id 
+
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Post', id: arg.id }
+            ]
+
+
+So after then lets update our exports of the mutations
+
+Now lets go back and make those changes work to the components so lets go back to the file tree and make changes to the 
+AddPostForm Component
+So first we gonna import 
+import { useAddNewPostMutation } from "./postsSlice";
+
+So now we will no longer use useDispatch
+So after then we are bringing in the addNewPost but notice we are also bringing in the  isLoading although I once said its not necessary but we are just using it to chech the state
+ So we gonna cancel the addNewPost from a postsSlice that we were importing and the useDispatch also get rid of our addRequestStatus
+
+So inside the onSavePostClicked we are goint to make the function asynchronously and then await for the addNewPost that we get from the useAddNewPostMutation  And then we will passin the post
+
+await addNewPost({ title, body: content, userId }).unwrap()
+which is the title ,  the body which is the content and the userId but we will still use unwrap because we are still in try/catch block
+
+And we will also remove the finally block from the try/catch block
+And for canSave we change 
+    const canSave = [title, content, userId].every(Boolean) && addRequestStatus === 'idle';
+to
+    const canSave = [title, content, userId].every(Boolean) && !isLoading;
+
+
+
+
+So After then we are going to make changes that are nearly identical to our editPostForm
+But our edit post form is going to update and delete so that makes it receive two mutations
+So lets first install them 
+import { useUpdatePostMutation, useDeletePostMutation } from "./postsSlice";
+
+So after then we are bringing in the updatePost and isLoading status from the useUpdatePostMutation and also the deletePost from the useDeletePostMutation()
+const [updatePost, { isLoading }] = useUpdatePostMutation()
+const [deletePost] = useDeletePostMutation()
+
+And once again we will not need the dispatch, requestStatus,finally in try/catch block  and the isLoading as well
+
+AND make our onSavePostClicked to an async function which awaits for 
+await updatePost({id: post.id, title, body: content, userId}).unwrap()
+
+After there we are not finished yet so we gonna also change in the delete section
+So we go to onDeletePostClicked and we also gonna make it an async function and inside we are just gonna pass in the id which is the post.id because is what is only needed back in our extendedApiSlice
+
+Now there is one more big component change we need to make and its not in posts folder but in users 
+Folder and its going to be on the userPage 
+Remember we are getting posts by the user ids so we can display them on the userPage
+So that’s what we are going to do here so lets go ahead and import useGetPostsByUserIdQuery
+import { useGetPostsByUserIdQuery } from '../posts/postsSlice'
+
+so we gonna remove selectAllPosts or selectPostsByUser
+
+And below we will ring on our hook right where we defined postsForUser
+  const {
+        data: postsForUser,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetPostsByUserIdQuery(userId);
+And now you can see useGetPostsByUserIdQuery and we are passing in the userId that we got from the useParams HOOK with react router 
+
+And once we have that we are defining the data that we get as postsForUser  and after then we have statuses
+
+And now our content is going to change 
+
+    let content;
+    if (isLoading) {
+        content = <p>Loading...</p>
+    } else if (isSuccess) {
+        const { ids, entities } = postsForUser
+        content = ids.map(id => (
+            <li key={id}>
+                <Link to={`/post/${id}`}>{entities[id].title}</Link>
+            </li>
+        ))
+    } else if (isError) {
+        content = <p>{error}</p>;
+    }
+
+So lets break it down so we are defining content and then we are checking those different progress stating with isLoading 
+Thes isSuccess so here there is alittle bit of complicated because remember we now have normalized state so our postsForUser or our data that we receive have that IDs array and the entities object that has all of the individual posts for users so we are destructuring them from postsForUser
+And we are mapping over Ids array now for each id we are going to create a list item and we are going to link to the post
+But then when we get to the content here inside and we need the title we have to use that entities object as a lookup object so we pass in the id an it gives us the specific post its an object lookup and then we reference the title
+             <Link to={`/post/${id}`}>{entities[id].title}</Link>
+
+End then we will deal with isError
+
+So lets keep on fixing starting with the header component removing all the count shit
+
+
+Now the last thing is to move on to the ReactionButtons.js 
+But we are also gonna go back to the postsSlice where our extended API slice is and make another method here inside if extendedApiSlice
+  addReaction: builder.mutation({
+            query: ({ postId, reactions }) => ({
+                url: `posts/${postId}`,
+                method: 'PATCH',
+                // In a real app, we'd probably need to base this on user ID somehow
+                // so that a user can't do the same reaction more than once
+                body: { reactions }
+            }),
+      async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled }) {
+         // `updateQueryData` requires the endpoint name and cache key arguments,
+         // so it knows which piece of cache state to update
+      const patchResult = dispatch(
+         extendedApiSlice.util.updateQueryData('getPosts', undefined, draft => {
+         // The `draft` is Immer-wrapped and can be "mutated" like in createSlice
+                const post = draft.entities[postId]
+                   if (post) post.reactions = reactions
+                    })
+                )
+                try {
+                    await queryFulfilled
+                } catch {
+                    patchResult.undo()
+                }
+            }
+        })
+
+It’s a big method so lets Break it Down
+So its called addReaction its once again a builder.mutation but we don’t want to reload our list everytime we add a reaction 
+So we are going to do this differently and This is what we call an Optomistic Update
+And that’s what we are going to perform here
+So lets break this down
+First we have a query and this query is going to receive a postId and reactions notice we are destructuring it  from the object we bring in
+Then we got the URL which is going to the post then the postId
+And the method is going to be PATCH 
+now notice there is a note and it comes directly from the docs examples saying 
+ // In a real app, we'd probably need to base this on user ID somehow
+ // so that a user can't do the same reaction more than once
+
+And that Is true with this currect setup the user will be able to have a reaction more than once 
+What we are  doing differently from the docs example is they were just passing in the individual reaction  
+And incrementing it  because they didn’t give this example with normalized state 
+
+Am passing in all of the reactions for the post and then we are going to replace the existing reactions with the reactions that are passed in
+Okay once we have that and that would typically what we would do
+But now notice we have onQueryStarted handler
+Now this is a littleBit Different we are once again passing the pistId and the Reactions just like we did above with the query  but then it has a second parameter as well that parameter has somethings in there we can use one is dispatch and another is queryFulfilled which is a promise so we are going to look  and so we are going to look at that to know some status as well
+
+After then
+Now our Note says
+         // `updateQueryData` requires the endpoint name and cache key arguments,
+         // so it knows which piece of cache state to update
+Well that’s what we are going to do right down after the comment so we are defining patchResult then we are using dispatch that we got from the second parameter of the onQueryStarted handler and what we are going to dispatch is the extendedApiSlice.util and then we can get this updateQueryData and there is where we pass in the endpoint “getPosts” 
+Now we have undefined here for that cache key argument but we do have the endpoint and that’s all we need 
+But the draft is the draft of our data
+// The `draft` is Immer-wrapped and can be "mutated" like in createSlice
+So The data can be directly mutated
+So what we do here is we define the  post  which is equal to draft.entities[postId] remember this is the draft of our data  and our data have ids array and entities  and I am passign in that postId so agan this is the
+ Object lookup  -  draft.entities[postId]
+So am getting that specific post and then if that post exists  am setting in the post.reactions to the reactions that we passed in to this builder mutation
+     if (post) post.reactions = reactions
+
+And So that would normally  be a mutation here but immer-js is going to handle that collectly for us
+
+Now after we do all that what happens is we await for that promised to fullfill the promise that was in a parameter here queryFulfilled 
+Otherwise we are going to undo this patch if it catches an error
+                try {
+                    await queryFulfilled
+                } catch {
+                    patchResult.undo()
+                }
+
+And that is because this is an optimistic update so what we are really doing inside of the patchResult is updating our cache and that is happening optimistically possibly before the data at the API has been updated 
+So we are instantly see that in our UI what happens is we click on the reaction and it instantly updates and then you see the network request go to the API to go ahead and update the data so it would match what we already see in our UI
+But if it fails in any reason then it would UNDO what we changed inside of our cache our data as well
+So that is why we look for query fulfilled and we hope it fulfilles but if for some reason it doesent  cause we have optimisticly updated it doesent mean that it cannot be undone
+SO THAT’S HOW IT WORKS IN OPTIMISTIC UPDATE  - AND I KNOW IT’S A LITTLEBIT COMPLEX THAN JUST SENDING AND RECEIVING DATA FROM API AND OF COURSE UPDATING OUR STATE WITH THAT AS WELL
+BUT WE ARE OPTIMISTICLLY UPDATING OUR CACHE POSIBLY BEFORE THE DATE IS RECEIVED BY API WITH THIS SETUP
+
+And then a final note in this addReaction is that we are not using invalidatesTags Because we don’t want to refetch the list everytime a reaction is added 
+So we are not going to invalidateTags – we are optomisticlly updating the cache already not having to do another request but we are going to update the data at the API as well
+
+ More Explanation from CHATGPT
+This code is a mutation in RTK Query (from Redux Toolkit) used to update reactions on a post and optimistically update the UI before the server responds.
+Let’s break it down step-by-step.
+________________________________________
+1. builder.mutation
+addReaction: builder.mutation({
+This defines a mutation endpoint called addReaction.
+•	Mutation = used when you change data on the server (POST, PUT, PATCH, DELETE).
+•	In this case we update reactions on a post.
+________________________________________
+2. query
+query: ({ postId, reactions }) => ({
+    url: `posts/${postId}`,
+    method: 'PATCH',
+    body: { reactions }
+}),
+This tells RTK Query how to send the request to the server.
+Parameters
+{ postId, reactions }
+Example call:
+addReaction({
+   postId: 5,
+   reactions: { thumbsUp: 4 }
+})
+Request sent to server
+PATCH /posts/5
+body:
+{
+  reactions: { thumbsUp: 4 }
+}
+Meaning:
+➡ Update post with ID 5 and modify its reactions.
+________________________________________
+3. onQueryStarted
+async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled })
+This runs immediately when the mutation starts, before the server responds.
+Used for optimistic updates.
+Optimistic update =
+👉 Update the UI immediately without waiting for server response.
+This makes the app feel faster.
+________________________________________
+4. updateQueryData
+const patchResult = dispatch(
+    extendedApiSlice.util.updateQueryData(
+        'getPosts',
+        undefined,
+        draft => {
+            const post = draft.entities[postId]
+            if (post) post.reactions = reactions
+        }
+    )
+)
+What this does
+It updates cached data from getPosts query.
+updateQueryData(endpointName, cacheKey, updater)
+Parameters:
+1️⃣ 'getPosts'
+The query whose cache we want to update.
+2️⃣ undefined
+The cache key argument used when calling getPosts.
+Example:
+useGetPostsQuery()
+Since there are no arguments, the key is undefined.
+3️⃣ draft => {}
+A function to modify cached data.
+________________________________________
+Draft explanation
+draft is an Immer draft object (from Immer).
+So you can write code like:
+draft.entities[postId].reactions = reactions
+Even though Redux normally requires immutable updates.
+________________________________________
+What this line does
+const post = draft.entities[postId]
+if (post) post.reactions = reactions
+Meaning:
+1.	Find the post in the cache
+2.	Update its reactions immediately
+So the UI updates before the server responds.
+________________________________________
+5. queryFulfilled
+try {
+    await queryFulfilled
+}
+This waits for the server request to finish.
+If the server succeeds → nothing happens.
+________________________________________
+6. Error handling
+catch {
+    patchResult.undo()
+}
+If the server fails, it undoes the optimistic update.
+So the UI goes back to the previous state.
+________________________________________
+7. Why store patchResult
+const patchResult = dispatch(...)
+Because updateQueryData returns a patch object with:
+patchResult.undo()
+This allows rollback if the request fails.
+________________________________________
+Complete Flow
+User clicks 👍 reaction
+1️⃣ Mutation starts
+2️⃣ UI updates instantly (optimistic update)
+3️⃣ Request sent to server
+4️⃣ If success → keep change
+5️⃣ If failure → undo change
+________________________________________
+Visual Example
+Initial state
+post: {
+   id: 1,
+   reactions: { thumbsUp: 2 }
+}
+User clicks 👍
+Optimistic update
+post: {
+   id: 1,
+   reactions: { thumbsUp: 3 }
+}
+Server response:
+✔ success → keep
+❌ failure → revert to 2
+________________________________________
+One Important Thing
+This works because getPosts used createEntityAdapter:
+draft.entities[postId]
+Meaning posts are stored like:
+{
+  ids: [1,2,3],
+  entities: {
+     1: {...},
+     2: {...}
+  }
+}
+________________________________________
+If you want, I can also explain why undefined is passed here:
+updateQueryData('getPosts', undefined, ...)
+because that part confuses many RTK Query learners.
+
+
+
+
+
+
+Okay Lets Save these changes and now lets move to ReactionButtons component
+And what we are going to do is add reactions so we can remove the useDispatch and reactionAdded from postsSlice 
+What we need is
+import { useAddReactionMutation } from './postsSlice'
+
+Now lets move dispatch in the code and replace that with  calling our useAddReactionMutation Hook and getting the addReaction function from it   
+    const [addReaction] = useAddReactionMutation()
+
+Now lets scroll up and we are just going to change a little bit about our button but we will still be using Object.entries and we will still use the reaction emoji and map over with the name and the emoji no changes the button  will still have a key that’s a name type – button className-reactionButton 
+But our onClick will Definetly change so lets go ahead and replace it 
+ 
+ onClick={() => {
+                    const newValue = post.reactions[name] + 1;
+                    addReaction({ postId: post.id, reactions: { ...post.reactions, [name]: newValue } })
+                }}
+Nd you can see what we are doing now is defining a newValue and we are getting the post.reactions name and we are adding one to it  so that’s a newValue then when we addReactions  we are passing in all the reactiins so we got the postId that we need that’s passedin and then the  reactions here so we spread in the post reactions and then we override the current reaction that with that newValue and so now it would have the increment for that one reaction 
+So then down here everything remains the same 
+We forget to export the addReaction hook
+So lastly lets demonstrate how things now works in the Browser
+Starting with going to the redux devtool and see all the data flow and everything and how they work
+ 
+Also we are going to the network area in inspect to see our cache
+ 
+
+Here I have entered a one userPage called Clementina DuBuque
+And you can see there is one request posts/?userId=10 that is a fetch so we got that data 
+And we can go to any of his posts among the two up there but if we return back to the userpage there will be no any other request because the data is catched
+But if we go to the other user the process starts again its fetching data and then its catching
+Now it will eventually expire and redux handles fro us it as well remember that middleware handles those exploration so you ca see how effitient this would be now if you change something lets say if you update the post 
+And save now you can see something happens 
+ 
+You can see a preflight request and then there is a fetch and you can see actually its a put request that was sent and you can see 200 for that 
+And then that couse the fetch to invalidate the cache so the post were once again fetched at that point 
+So there you can see how everthing is working and you can play around that with redux devtools and alos look at the network tab 
+But it all works as expected
+So a fully blog site with Normalized state and Optimistic updates if you look on the network while clicking reactions two network requests are created that is the fetch and the preflight request
+
+So That’s is pretty much the basics of Redux with redux toolkit 
+ASSIGNMENT IS ALSO CHANGING THE USERS FROM ASYNC THUNK TO RTK Query
+
+
+
+
+
+
+
+THE QUICK OVERVIEW OF THE LEARNING PROCESS
+•	Chapter 1 –  STRUCTURE
+•	Chapter 2 – DATAFLOW
+•	Chapter 3 – ASYNC LOGIC
+•	Chapter 4 – BLOG PROJECT
+•	Chapter 5 – PERFORMANCE
+•	Chapter 6 – RTK Query
+•	Chapter 7 – ADVANCED
+
+
+
+CHAT RATINGS
+I looked through your document. Honestly, this is a very solid learning documentation for Redux and Redux Toolkit. 👍
+You didn’t just copy syntax — you explained patterns, architecture, and reasoning, which is how good developers learn.
+I'll give you feedback like a senior developer reviewing your notes.
+________________________________________
+1️⃣ What You Did Very Well
+✅ You Explained Slices Clearly
+You explained that a slice represents logic for one feature.
+Example you wrote:
+•	counterSlice
+•	postsSlice
+•	usersSlice
+This is exactly how feature-based architecture works.
+That’s correct professional thinking.
+________________________________________
+✅ You Explained Redux Flow
+Your notes show the full flow:
+Component
+   ↓
+dispatch(action)
+   ↓
+Reducer
+   ↓
+Store updated
+   ↓
+useSelector reads new state
+   ↓
+UI updates
+That is the core Redux mental model.
+________________________________________
+✅ You Covered Important Redux Toolkit Tools
+Your documentation includes:
+•	createSlice
+•	configureStore
+•	useDispatch
+•	useSelector
+•	createAsyncThunk
+•	RTK Query (builder.query, builder.mutation)
+•	providesTags
+•	invalidatesTags
+•	caching
+•	normalization
+•	entityAdapter
+That is almost the entire modern Redux ecosystem.
+________________________________________
+✅ You Explained RTK Query Architecture
+You described:
+Query → Cache
+Mutation → Invalidate
+Invalidate → Refetch
+Refetch → UI update
+This is exactly how RTK Query works.
+Many developers struggle with this — you already documented it.
+________________________________________
+2️⃣ Advanced Topics You Included (Very Good)
+You also wrote about:
+🔹 Normalized State
+Using IDs + entities
+{
+  ids: [1,2,3],
+  entities: {
+    1:{},
+    2:{},
+    3:{}
+  }
+}
+This is advanced state architecture.
+________________________________________
+🔹 Optimistic Updates
+Updating UI before the server response.
+That is senior-level frontend pattern.
+________________________________________
+🔹 Middleware
+You explained:
+•	middleware runs between dispatch and reducer
+•	RTK Query middleware manages API requests
+Correct explanation.
+________________________________________
+3️⃣ If This Was a Real Documentation Review
+Here is what I would improve.
+Improve #1 — Structure
+Your document is more like learning notes.
+Better structure:
+1. Redux Fundamentals
+2. Redux Toolkit Basics
+3. Slices
+4. Store Configuration
+5. Async Logic (createAsyncThunk)
+6. RTK Query
+7. Cache Invalidation
+8. Advanced Patterns
+________________________________________
+Improve #2 — Diagrams
+Add diagrams like:
+Component
+   ↓
+Dispatch Action
+   ↓
+Reducer
+   ↓
+Store
+   ↓
+Selector
+   ↓
+Component Re-render
+This helps readers understand faster.
+________________________________________
+Improve #3 — Small Grammar Fixes
+Some sentences are informal like:
+"am gonna create"
+Better documentation style:
+"I will create a feature called posts"
+________________________________________
+4️⃣ Real Skill Level Based on Your Notes
+If you wrote this yourself, your understanding level is roughly:
+Topic	Level
+Redux basics	✅ Strong
+Redux Toolkit	✅ Strong
+Slices architecture	✅ Strong
+Async Redux	✅ Good
+RTK Query	✅ Good
+Advanced caching	⚡ Intermediate
+That is around junior → mid level React developer.
+________________________________________
+5️⃣ What You Should Learn Next
+To go next level with Redux:
+1️⃣ Redux DevTools debugging deeply
+2️⃣ memoized selectors (createSelector)
+3️⃣ entityAdapter performance patterns
+4️⃣ optimistic updates architecture
+5️⃣ server state vs client state separation
+________________________________________
+Final Honest Review
+Your document shows:
+✔ real understanding
+✔ architecture thinking
+✔ pattern recognition
+Not just syntax.
+That is how professional engineers think.
+________________________________________
+⭐ If you want, I can also show you something very important most Redux learners miss:
+The 7 Redux architecture patterns used in large production apps (Netflix-style frontend architecture).
+It will level up your understanding a lot.
+
+
+7 architecture patterns used in large production apps
+Great 👍 Since you already understand Redux and Redux Toolkit, let’s go through the 7 architecture patterns used in large production apps. These patterns are used in big apps built with React.
+Think of them as mental models senior developers use.
+________________________________________
+1️⃣ Feature-Based Folder Structure
+Instead of organizing code by type (components, reducers, etc.), production apps organize by feature.
+Example:
+src/
+   features/
+      posts/
+         postsSlice.js
+         PostsList.jsx
+         AddPostForm.jsx
+
+      users/
+         usersSlice.js
+         UsersList.jsx
+
+      auth/
+         authSlice.js
+Why this is powerful:
+•	Each feature is self-contained
+•	Easier to scale large apps
+•	Teams can work independently
+Your documentation already follows this pattern.
+________________________________________
+2️⃣ Global UI State vs Server State
+Professional apps separate two kinds of state.
+UI State (Redux Slice)
+Examples:
+•	theme
+•	modal open/close
+•	sidebar toggle
+•	selected tab
+Example slice:
+uiSlice
+authSlice
+themeSlice
+________________________________________
+Server State (RTK Query)
+Examples:
+•	posts
+•	users
+•	todos
+•	products
+Handled by RTK Query.
+Key idea:
+Redux slices → UI state
+RTK Query → server state
+This separation keeps apps clean.
+________________________________________
+3️⃣ Normalized State Pattern
+Large apps never store big nested arrays directly.
+Instead they normalize data.
+Example:
+{
+  ids: [1,2,3],
+  entities: {
+     1: {id:1, title:"Post 1"},
+     2: {id:2, title:"Post 2"},
+     3: {id:3, title:"Post 3"}
+  }
+}
+Benefits:
+•	Faster lookup
+•	easier updates
+•	better performance
+Redux Toolkit gives createEntityAdapter for this.
+________________________________________
+4️⃣ Smart vs Dumb Components
+Large apps separate components.
+Smart Component
+Connected to Redux.
+Example:
+PostsList
+Uses:
+useSelector
+useDispatch
+________________________________________
+Dumb Component
+Pure UI component.
+Example:
+PostCard
+Receives props only.
+<PostCard title="Hello" />
+Benefits:
+•	reusable
+•	easier testing
+•	cleaner code
+________________________________________
+5️⃣ Selectors for Derived Data
+Instead of computing data inside components, use selectors.
+Example:
+selectAllPosts
+selectPostById
+selectPostsByUser
+Selectors:
+•	read data from store
+•	compute derived values
+•	prevent unnecessary re-renders
+Example:
+const posts = useSelector(selectAllPosts)
+________________________________________
+6️⃣ Cache Invalidation Pattern
+With RTK Query, apps manage caching using tags.
+Example:
+tagTypes: ["Post"]
+Query:
+providesTags: ["Post"]
+Mutation:
+invalidatesTags: ["Post"]
+Flow:
+Query → Cache data
+Mutation → Invalidate tag
+Invalidate → Refetch query
+UI → Updates automatically
+This is one of the most powerful Redux Toolkit features.
+________________________________________
+7️⃣ Optimistic Updates
+Used for fast user experience.
+Instead of waiting for server response:
+User clicks like
+UI updates immediately
+Server request runs
+If error → rollback
+Example inside RTK Query:
+onQueryStarted
+updateQueryData
+patchResult.undo()
+This pattern makes apps feel instant.
+________________________________________
+🧠 Big Picture Architecture
+Professional React + Redux apps look like this:
+React Components
+        ↓
+Redux Hooks (useSelector / useDispatch)
+        ↓
+Redux Store
+        ↓
+Slices (UI state)
+RTK Query (server state)
+        ↓
+API / Backend
+________________________________________
+🚀 Based on Your Documentation
+You already understand:
+•	slices
+•	store
+•	RTK Query
+•	caching
+•	tags
+•	mutations
+•	queries
+So you are already past beginner level.
+________________________________________
+⭐ If you want, I can also show you something extremely useful:
+The complete Redux + React architecture used in a real production app (folder structure + data flow).
+It will make everything you learned click together perfectly.
+
+Advantages of feature based architecture in react with redux
+Yes — feature-based architecture is specifically designed to help apps scale 🚀
+It’s one of the most common patterns used in large apps built with React, Redux, and Redux Toolkit.
+Let’s break down why it scales well.
+________________________________________
+1️⃣ It Keeps Related Code Together
+In feature-based architecture, everything related to a feature lives in one place.
+Example:
+src/
+   features/
+      auth/
+         AuthPage.jsx
+         authSlice.js
+         authAPI.js
+
+      posts/
+         PostsList.jsx
+         AddPostForm.jsx
+         postsSlice.js
+Instead of searching the whole project for files, developers can go straight to the feature folder.
+This becomes very important when the app grows to hundreds of files.
+________________________________________
+2️⃣ Multiple Teams Can Work at the Same Time
+Large companies often have many developers working on the same app.
+Example:
+Team	Feature
+Team A	Authentication
+Team B	Posts
+Team C	Notifications
+With feature-based architecture:
+•	each team works inside their own feature folder
+•	they rarely interfere with other teams' code
+This improves development speed and collaboration.
+________________________________________
+3️⃣ Easier to Add New Features
+Scaling an app usually means adding more features.
+Feature architecture makes that simple:
+src/features/
+   auth/
+   posts/
+   users/
+   notifications/
+   messages/
+   analytics/
+You just add a new feature folder.
+No need to restructure the whole project.
+________________________________________
+4️⃣ Reduces Code Coupling
+Each feature becomes mostly independent.
+Example:
+features/
+   cart/
+   products/
+   checkout/
+If the cart feature changes, it usually doesn't break products or checkout.
+This reduces bugs in large applications.
+________________________________________
+5️⃣ Works Perfectly with Redux Toolkit
+The official Redux Toolkit documentation recommends this structure.
+Typical pattern:
+features/
+   posts/
+      postsSlice.js
+      postsAPI.js
+      PostsList.jsx
+Each feature contains:
+•	slice
+•	API logic
+•	components
+•	selectors
+Everything related to that feature stays together.
+________________________________________
+6️⃣ Easier Maintenance Over Time
+Large apps live for years.
+Without feature architecture, code becomes chaotic.
+Example of a bad structure:
+components/
+reducers/
+actions/
+selectors/
+You would need to open 4–5 folders just to understand one feature.
+Feature architecture avoids this.
+________________________________________
+7️⃣ Improves Code Discoverability
+New developers joining the project can easily understand it.
+Instead of:
+Where is the cart logic?
+Where is the cart UI?
+Where is the cart reducer?
+They just open:
+features/cart/
+________________________________________
+🧠 Simple Mental Model
+Think of feature architecture like mini-apps inside your app.
+features/
+   auth/        → login system
+   posts/       → blog system
+   comments/    → comment system
+   profile/     → user profile system
+Each feature is a self-contained module.
+________________________________________
+✅ Conclusion:
+Yes — feature-based architecture makes apps much easier to scale, especially when using React with Redux Toolkit.
+It helps with:
+•	large codebases
+•	multiple developers
+•	maintainability
+•	faster feature development
+________________________________________
+💡 If you'd like, I can also show you the folder structure used in very large React apps (100k+ lines of code) — it's the advanced version of feature-based architecture used in production.
+
+	
+feature based architecture in Backend
+Question
+is there feature based architecture in backend
+
+Answers
+Yes 👍 — feature-based architecture can also be used in the backend, and many modern backend systems use it. It’s often called feature-based, modular architecture, or vertical slice architecture.
+Instead of organizing backend code by type (controllers, models, services), you organize it by feature/module.
+This works well with backend frameworks like Node.js, Express.js, NestJS, Django, and Laravel.
+________________________________________
+1️⃣ Traditional Backend Structure (Layer-Based / MVC)
+Classic Model–View–Controller structure:
+backend/
+   controllers/
+       authController.js
+       postController.js
+
+   models/
+       userModel.js
+       postModel.js
+
+   routes/
+       authRoutes.js
+       postRoutes.js
+Problem when the project grows:
+•	auth logic is spread across many folders
+•	posts logic is also scattered
+•	hard to track one feature
+________________________________________
+2️⃣ Feature-Based Backend Structure
+Instead, group everything by feature.
+backend/
+   features/
+      auth/
+         auth.controller.js
+         auth.service.js
+         auth.routes.js
+         auth.model.js
+
+      posts/
+         posts.controller.js
+         posts.service.js
+         posts.routes.js
+         posts.model.js
+
+      users/
+         users.controller.js
+         users.service.js
+         users.routes.js
+         users.model.js
+Everything related to auth lives in the auth folder.
+________________________________________
+3️⃣ Why Backend Feature Architecture Scales Well
+✔ Easier to maintain
+Developers can open:
+features/posts/
+and see all posts logic.
+________________________________________
+✔ Easier to add new features
+Add a new folder:
+features/
+   notifications/
+   payments/
+   analytics/
+No restructuring needed.
+________________________________________
+✔ Better for large teams
+Different teams can work on:
+Team	Feature
+Team A	Auth
+Team B	Payments
+Team C	Notifications
+________________________________________
+✔ Cleaner domain boundaries
+Each feature becomes a mini module.
+________________________________________
+4️⃣ Modern Backend Frameworks Encourage This
+For example NestJS uses a module system that is very similar to feature architecture.
+Example:
+src/
+   auth/
+      auth.controller.ts
+      auth.service.ts
+      auth.module.ts
+
+   posts/
+      posts.controller.ts
+      posts.service.ts
+      posts.module.ts
+Each feature becomes a module.
+________________________________________
+5️⃣ Fullstack Feature Architecture (Very Modern)
+Some teams structure both frontend and backend by feature.
+Example:
+frontend/
+   features/
+      auth/
+      posts/
+
+backend/
+   features/
+      auth/
+      posts/
+This creates consistent architecture across the entire project.
+________________________________________
+🧠 Simple Rule
+Use:
+Layer	Architecture
+Frontend	Feature-based
+Backend	MVC OR Feature-based
+Large backend	Feature-based modules
+________________________________________
+✅ Conclusion:
+Yes — feature-based architecture works very well in the backend and is widely used in modern applications. It improves scalability, maintainability, and team collaboration.
+________________________________________
+💡 If you'd like, I can also show you something very powerful used in big companies:
+Domain Driven Design (DDD) backend architecture — it’s like an advanced version of feature-based architecture used in large systems (Uber-level complexity). 🚀
+
+
+
+
+Question
+which is the best architecture for bi backend project which scales btn feature based architecture and MVC architecture
+
+Answers
+For a big backend project that needs to scale, feature-based (modular) architecture is generally better than classic MVC. However, the best approach in real systems is often feature-based modules that internally follow MVC principles.
+Let’s compare them clearly.
+________________________________________
+1️⃣ MVC Architecture
+The Model–View–Controller pattern separates code by technical layers.
+Typical structure:
+backend/
+   controllers/
+   models/
+   services/
+   routes/
+Advantages
+✅ Easy to learn
+✅ Very organized for small to medium projects
+✅ Supported by many frameworks like Express.js, Django, and Laravel
+Problems at large scale
+When the project becomes big:
+controllers/
+   authController.js
+   postController.js
+   paymentController.js
+   notificationController.js
+Feature logic becomes spread across many folders, which makes the system harder to maintain.
+________________________________________
+2️⃣ Feature-Based (Modular) Architecture
+Feature architecture organizes the backend around business features.
+Example:
+backend/
+   features/
+      auth/
+         auth.controller.js
+         auth.service.js
+         auth.model.js
+         auth.routes.js
+
+      posts/
+         posts.controller.js
+         posts.service.js
+         posts.model.js
+         posts.routes.js
+Everything related to posts lives inside one folder.
+________________________________________
+3️⃣ Why Feature Architecture Scales Better
+✔ Better for large teams
+Teams can work on separate modules:
+Team	Feature
+Team A	Auth
+Team B	Payments
+Team C	Notifications
+________________________________________
+✔ Easier maintenance
+If there is a bug in posts, developers go to:
+features/posts
+Instead of searching through controllers, models, and routes folders.
+________________________________________
+✔ Easier to add new features
+Just add:
+features/
+   analytics/
+   payments/
+   search/
+No restructuring required.
+________________________________________
+✔ Encourages modular systems
+Each feature becomes a self-contained module.
+This approach is used in modern backend frameworks like NestJS and large Node.js services.
+________________________________________
+4️⃣ What Large Systems Actually Use
+Most scalable systems use a hybrid approach.
+Feature modules that internally follow MVC.
+Example:
+backend/
+   modules/
+      auth/
+         auth.controller.js
+         auth.service.js
+         auth.model.js
+
+      posts/
+         posts.controller.js
+         posts.service.js
+         posts.model.js
+So the structure is:
+Feature Module
+   ├── Controller
+   ├── Service
+   └── Model
+________________________________________
+5️⃣ Industry Recommendation
+For large scalable backend systems:
+⭐ Best architecture:
+Feature-based modules + MVC inside each module
+________________________________________
+🧠 Final Comparison
+Architecture	Best For
+MVC	small/medium projects
+Feature-based	large scalable systems
+Feature + MVC	best for large production apps
+________________________________________
+✅ Conclusion:
+For a big backend project that needs to scale, the best choice is feature-based architecture with MVC inside each feature module.
+________________________________________
+💡 If you'd like, I can also show you the backend architecture used by very large Node.js apps (like companies with millions of users). It includes services, repositories, and modules, which is the next level beyond MVC. 🚀
+
+
+
+
+
+
+
+

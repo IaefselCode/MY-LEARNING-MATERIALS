@@ -1,0 +1,55 @@
+.button1{
+    height: 50px;
+    width: 150px;
+    font-size: large;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.button2{
+    height: 50px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: large;
+    outline: none;
+}
+li{
+    font-size: 20px;
+}
+body{
+    background-color:white;
+}
+.hideshow{
+    height: 200px;
+    width: 300px;
+    border-radius:50px;
+    background: rgb(0, 255, 42);
+    transition: all 0.5s;
+    box-shadow: 2px 2px 50px 1px black;
+    /*Default display*/
+    opacity:0;
+    display:none;
+}
+
+ul#demo{
+    /*Default*/
+    max-height:0px;
+    overflow-y: hidden;
+    /*This will Animate the Transition for 1s*/
+    transition: all 1s;
+}
+img{
+    height: 210px;
+    width: 300px;
+    border-radius: 50px;
+    transition: all 1s;
+}
+img:hover{
+opacity: 0;
+}
+p#changep{
+    font-family:  Segoe UI Emoji;
+    font-size: large   ;
+}
+input{
+    width:350px;
+}

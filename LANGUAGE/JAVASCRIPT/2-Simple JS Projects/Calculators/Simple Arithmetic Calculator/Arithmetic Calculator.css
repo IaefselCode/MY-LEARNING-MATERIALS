@@ -1,0 +1,67 @@
+body,html{
+    padding: 0;
+    margin: 0;
+    background-color: burlywood;
+    font-family: Segoe UI Emoji;
+}
+
+@keyframes cont {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+div.calc{
+    width: 35%;
+    height: auto;
+    margin:10px auto;
+    padding: 10px;
+    text-align: center;
+    animation: cont 0.5s 1s linear backwards;
+
+}
+div.btn{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+input{
+    width:100%;
+    height: 40px;
+    margin: 5px;
+    border: 1px solid black;
+    font-size: large;
+    outline: none;
+}
+input:invalid{
+    color: red;
+}
+button{
+    height: 40px;
+    width: 22%;
+    margin: 5px;
+    font-size:large;
+    cursor:pointer;
+    outline: none;
+    background-color: darkgray;
+    border: 1px solid black;
+}
+input.result{
+    background: black;
+    color: white;
+    width: 90%;
+    border-radius: 5px;
+    text-align: center;
+}
+
+@media (max-width:900px) {
+    div.calc {
+        width: 85%;
+    }
+}

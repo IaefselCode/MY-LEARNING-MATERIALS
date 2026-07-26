@@ -1,0 +1,36 @@
+1.Accessing images using tailwind  *
+2.Setting opacity using tailwind   *
+3.Setting levels of background transparency   *
+4.dealing with gradients and backgrounds      *
+5.More About Shadows
+6.Understand FlexBoxes
+7.SVG
+8.GRID
+9.IOIP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NEW
+w-full  and h
+h-screen and w
+w-[100px]  and h
+<div className="bg-amber-600">IAEFSEL CODE</div>
+
+
+
+
+
+SECTORS THAT NEEDS TO BE CHECKED IN THE LATTEST VERSION
+1.backgrounds

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Store and Retrieve Image</title>
+</head>
+<body>
+   <!-- Image to be stored -->
+   <img id="myImage" src="path/to/your/image.png" alt="Image to store">
+
+   <!-- Buttons to store and retrieve the image -->
+   <button onclick="storeImage()">Store Image</button>
+   <button onclick="retrieveImage()">Retrieve Image</button>
+
+   <!-- Image where the stored image will be displayed -->
+   <img id="myStoredImage" alt="Stored Image">
+
+   <!-- JavaScript code -->
+   <script>
+       // Function to convert image to Base64
+       function getBase64Image(img) {
+           const canvas = document.createElement("canvas");
+           canvas.width = img.width;
+           canvas.height = img.height;
+           const ctx = canvas.getContext("2d");
+           ctx.drawImage(img, 0, 0);
+           const dataURL = canvas.toDataURL("image/png");
+           return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+       }
+
+       // Function to store image in local storage
+       function storeImage() {
+           const img = document.getElementById("myImage");
+           const base64Image = getBase64Image(img);
+           localStorage.setItem("storedImage", base64Image);
+       }
+
+       // Function to retrieve image from local storage
+       function retrieveImage() {
+           const base64Image = localStorage.getItem(" const img = document.getElementById("myStoredImage");
+           img.src = "data:image/png;base64," + base64Image;
+       }
+   </script>
+</body>
+</html>

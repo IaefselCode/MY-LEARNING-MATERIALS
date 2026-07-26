@@ -1,0 +1,5 @@
+1.Editing the paragraph in js first you need to give it and id and select it and then set its textContent to what you want
+document.getElementById('text).textContent = `New textContent`
+
+2.Template literals - Makes combining normal text and javascript very easy
+Eg. {`Hellow my name is : ${name}`}

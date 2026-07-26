@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Try It Yourself</title>
+</head>
+<body>
+  <form action="https://codeliber.com/form-action.php" onsubmit="return validateForm()">
+    <label> First Name: <input type="text" name="firstName" id="firstName" /></label>
+    <input type="submit" />
+  </form>
+  
+  <p> This demo requires <b>internet connection</b>. </p>
+
+  <script type="text/javascript">
+    function validateForm() {
+      const firstName = document.getElementById("firstName").value;
+      if (firstName == "") {
+        alert("Please enter a value on the text field.");
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>
